@@ -17,7 +17,7 @@ import android.widget.SeekBar;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
-    private static final int IGNORE_EVENTS_AFTER_SOUND = 200;
+    private static final int IGNORE_EVENTS_AFTER_SOUND = 400;
     private static final float POSITIVE_COUNTER_THRESHOLD = (float) 7.0;
     private static final long DEFAULT_TEMPO = 1000;
 
@@ -89,6 +89,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         final SensorManager sensorMgr = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
         Sensor sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorMgr.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+        Log.i("Delay", String.valueOf(sensor.getMinDelay()));
     }
 
     @Override
@@ -111,9 +112,9 @@ public class MainActivity extends Activity implements SensorEventListener {
             long curTime = System.currentTimeMillis();
             if (lastShake != 0 && (curTime - lastShake) < pauseThreshold) return;
 
-            float x = event.values[SensorManager.DATA_X];
-            float y = event.values[SensorManager.DATA_Y];
-            float z = event.values[SensorManager.DATA_Z];
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
 
             float[] floats = {x, y, z};
             Direction direction = Direction.fromValue(indexOfMax(floats));
@@ -163,7 +164,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private void stopTempo() {
         Log.i("Tempo", "Stopping");
-        tempoButton.setText("Start Tempo");
+        tempoButton.setText("Play Tempo");
         tempoSlider.setEnabled(true);
         playerThread.stop();
     }
