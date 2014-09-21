@@ -8,7 +8,6 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -17,13 +16,13 @@ import android.widget.SeekBar;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
-    private static final int IGNORE_EVENTS_AFTER_SOUND = 400;
-    private static final float POSITIVE_COUNTER_THRESHOLD = (float) 7.0;
+    private static final int IGNORE_EVENTS_AFTER_SOUND = 500;
+    private static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
     private static final long DEFAULT_TEMPO = 1000;
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
 
     private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
-    private float accelerometerThreshold = POSITIVE_COUNTER_THRESHOLD;
+    private float sensorThreshold = POSITIVE_COUNTER_THRESHOLD;
     private MediaPlayer zSound;
     private MediaPlayer xSound;
     private MediaPlayer ySound;
@@ -48,11 +47,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         playerThread = new Task();
 
-        SeekBar accelerometerSlider = (SeekBar)findViewById(R.id.accelerometerThresholdSlider);
-        accelerometerSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        SeekBar sensorSlider = (SeekBar)findViewById(R.id.sensorThresholdSlider);
+        sensorSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                accelerometerThreshold = sliderToAccelerometerThreshold(progress);
+                sensorThreshold = sliderToAccelerometerThreshold(progress);
             }
 
             @Override
@@ -63,7 +62,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        accelerometerSlider.setProgress(thresholdToAccelerometerSlider(accelerometerThreshold));
+        sensorSlider.setProgress(thresholdToAccelerometerSlider(sensorThreshold));
 
         SeekBar pauseSlider = (SeekBar)findViewById(R.id.pauseSlider);
         pauseSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -102,12 +101,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.my, menu);
-        return true;
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == sensorType) {
             long curTime = System.currentTimeMillis();
@@ -120,7 +113,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             float[] floats = {x, y, z};
             Direction direction = Direction.fromValue(indexOfMax(floats));
 
-            if(floats[direction.getIndex()] > accelerometerThreshold){// || floats[direction.getIndex()] < NEGATIVE_COUNTER_THRESHOLD){
+            if(floats[direction.getIndex()] > sensorThreshold){
                 Log.v("XYZ", Float.toString(x) + "   " + Float.toString(y) + "   " + Float.toString(z) + "   ");
                 playSound(direction, curTime);
             }
@@ -165,14 +158,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private void stopTempo() {
         Log.i("Tempo", "Stopping");
-        tempoButton.setText("Play Tempo");
+        tempoButton.setText(R.string.start_tempo);
         tempoSlider.setEnabled(true);
         playerThread.stop();
     }
 
     private void startTempo() {
         Log.i("Tempo", "Starting");
-        tempoButton.setText("Stop Tempo");
+        tempoButton.setText(R.string.stop_tempo);
         long tempo = sliderToTempo(tempoSlider.getProgress());
         Log.i("Tempo", "Changing " + tempo);
         tempoSlider.setEnabled(false);

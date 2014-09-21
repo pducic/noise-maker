@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="The Noise Maker"
+        android:text="@string/title"
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Tempo Speed"
+        android:text="@string/tempo_speed"
         android:id="@+id/speedTextView"
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
@@ -43,21 +43,19 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play Tempo"
+        android:text="@string/start_tempo"
         android:id="@+id/playButton"
         android:clickable="true"
         android:enabled="true"
         android:onClick="onClick"
         android:layout_below="@+id/tempoSeekbar"
-        android:layout_alignLeft="@+id/textView"
-        android:layout_alignStart="@+id/textView"
-        android:layout_alignRight="@+id/textView"
-        android:layout_alignEnd="@+id/textView" />
+        android:layout_toRightOf="@+id/speedTextView"
+        android:layout_toEndOf="@+id/speedTextView" />
 
     <SeekBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/accelerometerThresholdSlider"
+        android:id="@+id/sensorThresholdSlider"
         android:layout_below="@+id/accelerometerThresholdView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -68,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Acceleratometer Threshold"
+        android:text="@string/sensor_threshold"
         android:id="@+id/accelerometerThresholdView"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
@@ -78,9 +76,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Pause After Sound"
+        android:text="@string/pause_threshold"
         android:id="@+id/pauseView"
-        android:layout_below="@+id/accelerometerThresholdSlider" />
+        android:layout_below="@+id/sensorThresholdSlider" />
 
     <SeekBar
         android:layout_width="wrap_content"

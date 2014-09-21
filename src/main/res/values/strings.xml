@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">My Application</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Jammin\'</string>
+    <string name="start_tempo">Play Tempo</string>
+    <string name="stop_tempo">Stop Tempo</string>
+    <string name="sensor_threshold">Sensor Threshold</string>
+    <string name="pause_threshold">Pause After Sound</string>
+    <string name="tempo_speed">Tempo Speed</string>
+    <string name="title">Jammin\'</string>
 
 </resources>
