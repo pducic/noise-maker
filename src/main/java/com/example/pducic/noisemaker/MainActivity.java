@@ -17,10 +17,12 @@ import android.widget.SeekBar;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
+    private static final int IGNORE_EVENTS_AFTER_SOUND = 200;
     private static final float POSITIVE_COUNTER_THRESHOLD = (float) 7.0;
-    private static final float NEGATIVE_COUNTER_THRESHOLD = (float) -7.0;
-    private static final int IGNORE_EVENTS_AFTER_SHAKE = 200;
+    private static final long DEFAULT_TEMPO = 1000;
 
+    private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
+    private float accelerometerThreshold = POSITIVE_COUNTER_THRESHOLD;
     private MediaPlayer zSound;
     private MediaPlayer xSound;
     private MediaPlayer ySound;
@@ -28,7 +30,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private long lastShake = 0;
     private Task playerThread;
     private Button tempoButton;
-    private SeekBar seekBar;
+    private SeekBar tempoSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +43,44 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoSound = MediaPlayer.create(this, R.raw.pop);
         setContentView(R.layout.activity_my);
         tempoButton = (Button) findViewById(R.id.playButton);
-        seekBar = (SeekBar)findViewById(R.id.tempoSeekbar);
-
+        tempoSlider = (SeekBar)findViewById(R.id.tempoSeekbar);
+        tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         playerThread = new Task();
-        seekBar.setProgress(50);
 
-    }
+        SeekBar accelerometerSlider = (SeekBar)findViewById(R.id.accelerometerThresholdSlider);
+        accelerometerSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                accelerometerThreshold = sliderToAccelerometerThreshold(progress);
+            }
 
-    private long statusBarProgressToTempo(int progress) {
-        return 100 + progress*20;
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        accelerometerSlider.setProgress(thresholdToAccelerometerSlider(accelerometerThreshold));
+
+        SeekBar pauseSlider = (SeekBar)findViewById(R.id.pauseSlider);
+        pauseSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                pauseThreshold = sliderToPauseThreshold(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        pauseSlider.setProgress(thresholdToPauseSlider(pauseThreshold));
+
     }
 
     @Override
@@ -68,31 +99,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         stopTempo();
     }
 
-    public void onClick(View view) {
-        if (!playerThread.isRunning())
-            startTempo();
-        else {
-            stopTempo();
-        }
-    }
-
-    private void stopTempo() {
-        Log.i("Tempo", "Stopping");
-        tempoButton.setText("Start Tempo");
-        seekBar.setEnabled(true);
-        playerThread.stop();
-    }
-
-    private void startTempo() {
-        Log.i("Tempo", "Starting");
-        tempoButton.setText("Stop Tempo");
-        long tempo = statusBarProgressToTempo(seekBar.getProgress());
-        Log.i("Tempo", "Changing " + tempo);
-        seekBar.setEnabled(false);
-        playerThread.setTempo(tempo);
-        playerThread.start();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my, menu);
@@ -103,7 +109,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             long curTime = System.currentTimeMillis();
-            if (lastShake != 0 && (curTime - lastShake) < IGNORE_EVENTS_AFTER_SHAKE) return;
+            if (lastShake != 0 && (curTime - lastShake) < pauseThreshold) return;
 
             float x = event.values[SensorManager.DATA_X];
             float y = event.values[SensorManager.DATA_Y];
@@ -112,7 +118,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             float[] floats = {x, y, z};
             Direction direction = Direction.fromValue(indexOfMax(floats));
 
-            if(floats[direction.getIndex()] > POSITIVE_COUNTER_THRESHOLD){// || floats[direction.getIndex()] < NEGATIVE_COUNTER_THRESHOLD){
+            if(floats[direction.getIndex()] > accelerometerThreshold){// || floats[direction.getIndex()] < NEGATIVE_COUNTER_THRESHOLD){
                 Log.v("XYZ", Float.toString(x) + "   " + Float.toString(y) + "   " + Float.toString(z) + "   ");
                 playSound(direction, curTime);
             }
@@ -121,6 +127,55 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    public void onClick(View view) {
+        if (!playerThread.isRunning())
+            startTempo();
+        else {
+            stopTempo();
+        }
+    }
+
+    private int thresholdToPauseSlider(int pauseThreshold) {
+        return (pauseThreshold - 100) / 20;
+    }
+
+    private int thresholdToAccelerometerSlider(float accelerometerThreshold) {
+        return (int) (accelerometerThreshold / 0.3);
+    }
+
+    private int sliderToPauseThreshold(int progress) {
+        return 10 + progress * 20;
+    }
+
+    private float sliderToAccelerometerThreshold(int progress) {
+        return 0.3f * progress;
+    }
+
+    private int tempoToSlider(long tempo) {
+        return (int) ((tempo - 100) / 20);
+    }
+
+    private long sliderToTempo(int progress) {
+        return 100 + progress * 20;
+    }
+
+    private void stopTempo() {
+        Log.i("Tempo", "Stopping");
+        tempoButton.setText("Start Tempo");
+        tempoSlider.setEnabled(true);
+        playerThread.stop();
+    }
+
+    private void startTempo() {
+        Log.i("Tempo", "Starting");
+        tempoButton.setText("Stop Tempo");
+        long tempo = sliderToTempo(tempoSlider.getProgress());
+        Log.i("Tempo", "Changing " + tempo);
+        tempoSlider.setEnabled(false);
+        playerThread.setTempo(tempo);
+        playerThread.start();
     }
 
     private int indexOfMax(float... values){

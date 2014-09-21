@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Speed"
+        android:text="Tempo Speed"
         android:id="@+id/speedTextView"
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
@@ -45,14 +45,51 @@
         android:layout_height="wrap_content"
         android:text="Play Tempo"
         android:id="@+id/playButton"
+        android:clickable="true"
+        android:enabled="true"
+        android:onClick="onClick"
         android:layout_below="@+id/tempoSeekbar"
         android:layout_alignLeft="@+id/textView"
         android:layout_alignStart="@+id/textView"
-        android:layout_marginTop="84dp"
         android:layout_alignRight="@+id/textView"
-        android:layout_alignEnd="@+id/textView"
-        android:clickable="true"
-        android:enabled="true"
-        android:onClick="onClick" />
+        android:layout_alignEnd="@+id/textView" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/accelerometerThresholdSlider"
+        android:layout_below="@+id/accelerometerThresholdView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/pauseSlider"
+        android:layout_alignEnd="@+id/pauseSlider" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Acceleratometer Threshold"
+        android:id="@+id/accelerometerThresholdView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Pause After Sound"
+        android:id="@+id/pauseView"
+        android:layout_below="@+id/accelerometerThresholdSlider" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pauseSlider"
+        android:layout_below="@+id/pauseView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/tempoSeekbar"
+        android:layout_alignEnd="@+id/tempoSeekbar" />
 
 </RelativeLayout>
