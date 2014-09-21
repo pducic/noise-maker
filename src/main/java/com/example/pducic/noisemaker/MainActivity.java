@@ -20,6 +20,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private static final int IGNORE_EVENTS_AFTER_SOUND = 400;
     private static final float POSITIVE_COUNTER_THRESHOLD = (float) 7.0;
     private static final long DEFAULT_TEMPO = 1000;
+    private static final int sensorType = Sensor.TYPE_GYROSCOPE;
 
     private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
     private float accelerometerThreshold = POSITIVE_COUNTER_THRESHOLD;
@@ -87,7 +88,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onResume() {
         super.onResume();
         final SensorManager sensorMgr = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
-        Sensor sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        Sensor sensor = sensorMgr.getDefaultSensor(sensorType);
         sensorMgr.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
         Log.i("Delay", String.valueOf(sensor.getMinDelay()));
     }
@@ -108,7 +109,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+        if (event.sensor.getType() == sensorType) {
             long curTime = System.currentTimeMillis();
             if (lastShake != 0 && (curTime - lastShake) < pauseThreshold) return;
 

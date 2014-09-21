@@ -17,7 +17,11 @@
             </intent-filter>
         </activity>
 
-        <uses-feature android:name="android.hardware.sensor.accelerometer"
+        <uses-feature
+            android:name="android.hardware.sensor.accelerometer"
+            android:required="true" />
+        <uses-feature
+            android:name="android.hardware.sensor.gyroscope"
             android:required="true" />
     </application>
 
