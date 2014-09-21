@@ -14,14 +14,9 @@ import android.view.MenuItem;
 
 public class ShakeDetectActivity extends Activity implements SensorEventListener {
 
-    private static final float POSITIVE_COUNTER_THRESHOLD = (float) 7.0;
+    private static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
     private static final float NEGATIVE_COUNTER_THRESHOLD = (float) -7.0;
     private static final int IGNORE_EVENTS_AFTER_SHAKE = 200;
-
-    //TODO add calibration
-    private static final float DEFAULT_X = 0.23523031f;
-    private static final float DEFAULT_Y = 0.12569559f;
-    private static final float DEFAULT_Z = 10.666168f;
 
     private MediaPlayer zSound;
     private MediaPlayer xSound;
@@ -32,21 +27,12 @@ public class ShakeDetectActivity extends Activity implements SensorEventListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final SensorManager sensorMgr = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
-        Sensor sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorMgr.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
         xSound = MediaPlayer.create(this, R.raw.pew);
         ySound = MediaPlayer.create(this, R.raw.your_mom);
         zSound = MediaPlayer.create(this, R.raw.jump);
         setContentView(R.layout.activity_my);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    sensorMgr.flush(ShakeDetectActivity.this);
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -66,13 +52,13 @@ public class ShakeDetectActivity extends Activity implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             long curTime = System.currentTimeMillis();
             if (lastShake != 0 && (curTime - lastShake) < IGNORE_EVENTS_AFTER_SHAKE) return;
 
-            float x = event.values[SensorManager.DATA_X] - DEFAULT_X;
-            float y = event.values[SensorManager.DATA_Y] - DEFAULT_Y;
-            float z = event.values[SensorManager.DATA_Z] - DEFAULT_Z;
+            float x = event.values[SensorManager.DATA_X];
+            float y = event.values[SensorManager.DATA_Y];
+            float z = event.values[SensorManager.DATA_Z];
 
             float[] floats = {x, y, z};
             Direction direction = Direction.fromValue(indexOfMax(floats));
