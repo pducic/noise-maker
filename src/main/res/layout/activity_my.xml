@@ -44,10 +44,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/start_tempo"
-        android:id="@+id/playButton"
+        android:id="@+id/playTempoButton"
         android:clickable="true"
         android:enabled="true"
-        android:onClick="onClick"
+        android:onClick="onPlayTempoClick"
         android:layout_below="@+id/tempoSeekbar"
         android:layout_toRightOf="@+id/speedTextView"
         android:layout_toEndOf="@+id/speedTextView" />
@@ -89,5 +89,27 @@
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/tempoSeekbar"
         android:layout_alignEnd="@+id/tempoSeekbar" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/record"
+        android:id="@+id/recordButton"
+        android:onClick="onRecordClick"
+        android:layout_marginBottom="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/pauseView"
+        android:layout_alignEnd="@+id/pauseView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/play"
+        android:id="@+id/playButton"
+        android:onClick="onPlayClick"
+        android:layout_alignTop="@+id/recordButton"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView" />
 
 </RelativeLayout>

@@ -13,6 +13,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -20,6 +23,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
     private static final long DEFAULT_TEMPO = 1000;
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
+    private static final int MAX_RECORDING_SIZE = 1000;
 
     private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
     private float sensorThreshold = POSITIVE_COUNTER_THRESHOLD;
@@ -28,9 +32,16 @@ public class MainActivity extends Activity implements SensorEventListener {
     private MediaPlayer ySound;
     private MediaPlayer tempoSound;
     private long lastShake = 0;
-    private Task playerThread;
+    private TempoTask tempoTask;
     private Button tempoButton;
     private SeekBar tempoSlider;
+    private boolean recording = false;
+    private boolean playing = false;
+    private Button playButton;
+    private Button recordButton;
+    private long startRecording;
+    private Map<Long, Direction> recordingMap = new HashMap<Long, Direction>();
+    private PlayTask playTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +53,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         zSound = MediaPlayer.create(this, R.raw.g);
         tempoSound = MediaPlayer.create(this, R.raw.pop);
         setContentView(R.layout.activity_my);
-        tempoButton = (Button) findViewById(R.id.playButton);
+        tempoButton = (Button) findViewById(R.id.playTempoButton);
         tempoSlider = (SeekBar)findViewById(R.id.tempoSeekbar);
+        playButton = (Button) findViewById(R.id.playButton);
+        recordButton = (Button) findViewById(R.id.recordButton);
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
-        playerThread = new Task();
+        tempoTask = new TempoTask();
+        playTask = new PlayTask();
+
 
         SeekBar sensorSlider = (SeekBar)findViewById(R.id.sensorThresholdSlider);
         sensorSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -108,13 +123,19 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             float x = event.values[0];
             float y = event.values[1];
-            float z = event.values[2];
+            float z = event.values[2] - 9.81f;
 
             float[] floats = {x, y, z};
             Direction direction = Direction.fromValue(indexOfMax(floats));
 
-            if(floats[direction.getIndex()] > sensorThreshold){
+            if(Math.abs(floats[direction.getIndex()]) > sensorThreshold){
                 Log.v("XYZ", Float.toString(x) + "   " + Float.toString(y) + "   " + Float.toString(z) + "   ");
+                if(recording){
+                    if (recordingMap.size() > MAX_RECORDING_SIZE) {
+                        stopRecording();
+                    }
+                    recordingMap.put(curTime-startRecording, direction);
+                }
                 playSound(direction, curTime);
             }
         }
@@ -124,12 +145,59 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-    public void onClick(View view) {
-        if (!playerThread.isRunning())
+    public void onPlayTempoClick(View view) {
+        if (!tempoTask.isRunning())
             startTempo();
         else {
             stopTempo();
         }
+    }
+
+    public void onPlayClick(View view){
+        if(playing){
+            stopPlaying();
+        }
+        else{
+            startPlaying();
+        }
+    }
+
+    public void onRecordClick(View view){
+        if(recording){
+            stopRecording();
+        }
+        else{
+            startRecording();
+        }
+    }
+
+    private void startPlaying() {
+        Log.i("Play", "Starting...");
+        playing = true;
+        playButton.setText(R.string.stop);
+        playTask.start();
+
+    }
+
+    private void stopPlaying() {
+        Log.i("Play", "Stopping...");
+        playing = false;
+        playButton.setText(R.string.play);
+        playTask.stop();
+    }
+
+    private void startRecording() {
+        recordingMap.clear();
+        recording = true;
+        startRecording = System.currentTimeMillis();
+        recordButton.setText(R.string.stop);
+        playButton.setEnabled(false);
+    }
+
+    private void stopRecording() {
+        recording = false;
+        recordButton.setText(R.string.record);
+        playButton.setEnabled(true);
     }
 
     private int thresholdToPauseSlider(int pauseThreshold) {
@@ -160,7 +228,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.i("Tempo", "Stopping");
         tempoButton.setText(R.string.start_tempo);
         tempoSlider.setEnabled(true);
-        playerThread.stop();
+        tempoTask.stop();
     }
 
     private void startTempo() {
@@ -169,8 +237,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         long tempo = sliderToTempo(tempoSlider.getProgress());
         Log.i("Tempo", "Changing " + tempo);
         tempoSlider.setEnabled(false);
-        playerThread.setTempo(tempo);
-        playerThread.start();
+        tempoTask.setTempo(tempo);
+        tempoTask.start();
     }
 
     private int indexOfMax(float... values){
@@ -203,52 +271,47 @@ public class MainActivity extends Activity implements SensorEventListener {
             lastShake = currentTime;
     }
 
-    //TODO use android intent service
-    private class Task implements Runnable {
+    private class TempoTask extends Task {
 
-        private boolean running = false;
         private long tempo = 1000L;
-        private volatile Thread thread = null;
+        @Override
+        protected void process() {
+            try {
+                Thread.sleep(tempo);
+            } catch (InterruptedException e) {
+                Log.e("Tempo", "Interrupt");
+            }
+            Log.v("Tempo", "Playing sound");
+            tempoSound.start();
+        }
 
         public void setTempo(long tempo) {
             if(!isRunning())
                 this.tempo = tempo;
         }
+    }
 
-        void start(){
-            synchronized (this) {
-                if (running)
-                    return;
+    private class PlayTask extends Task {
 
-                thread = new Thread(this);
-                thread.setPriority(Thread.MAX_PRIORITY);
+        private int playedDirections;
+        private long startTime;
 
-                running = true;
-                thread.start();
-            }
-        }
-
-        void stop() {
-            thread = null;
-        }
-
-        boolean isRunning() {
-            return thread != null;
+        @Override
+        void start() {
+            super.start();
+            playedDirections = 0;
+            startTime = System.currentTimeMillis();
         }
 
         @Override
-        public void run() {
-            try {
-                while (thread == Thread.currentThread()) {
-                    Thread.sleep(tempo);
-                    Log.v("Tempo", "Playing sound");
-                    tempoSound.start();
-                }
-            } catch (Exception e) {
-                Log.e("Tempo", "Interrupted", e);
+        protected void process() {
+            if (playedDirections >= recordingMap.size()) {
+                stopPlaying();
             }
-            synchronized (this) {
-                running = false;
+            Direction direction = recordingMap.get(System.currentTimeMillis() - startTime);
+            if(direction != null){
+                playSound(direction, null);
+                playedDirections++;
             }
         }
     }

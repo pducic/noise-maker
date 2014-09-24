@@ -8,5 +8,8 @@
     <string name="pause_threshold">Pause After Sound</string>
     <string name="tempo_speed">Tempo Speed</string>
     <string name="title">Jammin\'</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="play">Play</string>
 
 </resources>
