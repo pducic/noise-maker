@@ -41,7 +41,7 @@ public abstract class Task implements Runnable {
                 process();
             }
         } catch (Exception e) {
-            Log.e("Tempo", "Interrupted", e);
+            Log.e("Task", "Interrupted", e);
         }
         synchronized (this) {
             running = false;

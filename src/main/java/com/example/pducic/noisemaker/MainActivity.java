@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import java.util.HashMap;
@@ -37,8 +38,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private SeekBar tempoSlider;
     private boolean recording = false;
     private boolean playing = false;
-    private Button playButton;
-    private Button recordButton;
+    private ImageButton playButton;
+    private ImageButton recordButton;
     private long startRecording;
     private Map<Long, Direction> recordingMap = new HashMap<Long, Direction>();
     private PlayTask playTask;
@@ -55,8 +56,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_my);
         tempoButton = (Button) findViewById(R.id.playTempoButton);
         tempoSlider = (SeekBar)findViewById(R.id.tempoSeekbar);
-        playButton = (Button) findViewById(R.id.playButton);
-        recordButton = (Button) findViewById(R.id.recordButton);
+        playButton = (ImageButton) findViewById(R.id.playButton);
+        recordButton = (ImageButton) findViewById(R.id.recordButton);
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
@@ -174,7 +175,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private void startPlaying() {
         Log.i("Play", "Starting...");
         playing = true;
-        playButton.setText(R.string.stop);
+        playButton.setImageResource(R.drawable.ic_action_stop);
         playTask.start();
 
     }
@@ -182,7 +183,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private void stopPlaying() {
         Log.i("Play", "Stopping...");
         playing = false;
-        playButton.setText(R.string.play);
+        playButton.setImageResource(R.drawable.ic_action_play);
         playTask.stop();
     }
 
@@ -190,13 +191,13 @@ public class MainActivity extends Activity implements SensorEventListener {
         recordingMap.clear();
         recording = true;
         startRecording = System.currentTimeMillis();
-        recordButton.setText(R.string.stop);
+        recordButton.setBackgroundResource(android.R.color.darker_gray);
         playButton.setEnabled(false);
     }
 
     private void stopRecording() {
         recording = false;
-        recordButton.setText(R.string.record);
+        recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(true);
     }
 
@@ -306,7 +307,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         @Override
         protected void process() {
             if (playedDirections >= recordingMap.size()) {
-                stopPlaying();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        stopPlaying();
+                    }
+                });
             }
             Direction direction = recordingMap.get(System.currentTimeMillis() - startTime);
             if(direction != null){
