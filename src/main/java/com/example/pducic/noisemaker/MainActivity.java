@@ -134,7 +134,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             float x = event.values[0];
             float y = event.values[1];
-            float z = event.values[2] - 9.81f;
+            float z = event.values[2];
 
             float[] floats = {x, y, z};
             Direction direction = Direction.fromValue(indexOfMax(floats));
