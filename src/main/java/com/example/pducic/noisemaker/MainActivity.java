@@ -5,7 +5,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +28,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
     private static final int MAX_RECORDING_SIZE = 1000;
 
+    // SoundPool constants
+    private static final int MAX_STREAMS = 3; // 3 sounds for now, TODO - make it configurable
+    private static final int SRC_QUALITY = 0; // Android Docs: "The sample-rate converter quality. Currently has no effect. Use 0 for the default"
+
     private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
     private float sensorThreshold = POSITIVE_COUNTER_THRESHOLD;
-    private MediaPlayer zSound;
-    private MediaPlayer xSound;
-    private MediaPlayer ySound;
     private MediaPlayer tempoSound;
     private long lastShake = 0;
     private TempoTask tempoTask;
@@ -43,15 +46,23 @@ public class MainActivity extends Activity implements SensorEventListener {
     private long startRecording;
     private Map<Long, Direction> recordingMap = new HashMap<Long, Direction>();
     private PlayTask playTask;
+    private SoundPool soundPool;
+
+    private int xSoundId;
+    private int ySoundId;
+    private int zSoundId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        xSound = MediaPlayer.create(this, R.raw.c);
-        ySound = MediaPlayer.create(this, R.raw.f);
-        zSound = MediaPlayer.create(this, R.raw.g);
+        soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
+
+        xSoundId = soundPool.load(this, R.raw.c, 1);
+        ySoundId = soundPool.load(this, R.raw.f, 1);
+        zSoundId = soundPool.load(this, R.raw.g, 1);
+
         tempoSound = MediaPlayer.create(this, R.raw.pop);
         setContentView(R.layout.activity_my);
         tempoButton = (Button) findViewById(R.id.playTempoButton);
@@ -61,7 +72,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
-
 
         SeekBar sensorSlider = (SeekBar)findViewById(R.id.sensorThresholdSlider);
         sensorSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -253,21 +263,18 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     private void playSound(Direction direction, Long currentTime) {
-        MediaPlayer player = null;
         switch (direction) {
             case X:
-                player = xSound;
+                soundPool.play(xSoundId, 1, 1, 1, 0, 1);
                 break;
             case Y:
-                player = ySound;
+                soundPool.play(ySoundId, 1, 1, 1, 0, 1);
                 break;
             case Z:
-                player = zSound;
+                soundPool.play(zSoundId, 1, 1, 1, 0, 1);
                 break;
         }
-        if(player.isPlaying())
-            player.seekTo(0);
-        player.start();
+
         if(currentTime != null)
             lastShake = currentTime;
     }
