@@ -5,9 +5,10 @@ package com.example.pducic.noisemaker;
  */
 public enum Direction {
 
-    X(0),
-    Y(1),
-    Z(2);
+    UP(0),
+    DOWN(1),
+    LEFT(2),
+    RIGHT(3);
 
     private int index;
 
@@ -19,10 +20,4 @@ public enum Direction {
         return index;
     }
 
-    public static Direction fromValue(int index) {
-        for (Direction d : values()) {
-            if (d.index == index) return d;
-        }
-        return null;
-    }
 }

@@ -44,13 +44,11 @@ public class MainActivity extends Activity implements SensorEventListener {
     private ImageButton playButton;
     private ImageButton recordButton;
     private long startRecording;
-    private Map<Long, Direction> recordingMap = new HashMap<Long, Direction>();
+    //TODO use linked list or some kind
+    private Map<Long, Sound> recordingMap = new HashMap<Long, Sound>();
     private PlayTask playTask;
     private SoundPool soundPool;
-
-    private int xSoundId;
-    private int ySoundId;
-    private int zSoundId;
+    private Map<Direction, Integer> soundDirections = new HashMap<Direction, Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +57,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
 
-        xSoundId = soundPool.load(this, R.raw.c, 1);
-        ySoundId = soundPool.load(this, R.raw.f, 1);
-        zSoundId = soundPool.load(this, R.raw.g, 1);
+        soundDirections.put(Direction.UP, soundPool.load(this, R.raw.g, 1));
+        soundDirections.put(Direction.DOWN, soundPool.load(this, R.raw.drums, 1));
+        soundDirections.put(Direction.LEFT, soundPool.load(this, R.raw.c, 1));
+        soundDirections.put(Direction.RIGHT, soundPool.load(this, R.raw.f, 1));
 
         tempoSound = MediaPlayer.create(this, R.raw.pop);
         setContentView(R.layout.activity_my);
@@ -129,25 +128,25 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == sensorType) {
+            Log.v("XYZ", Float.toString(event.values[0]) + "   " + Float.toString(event.values[2]) + "   ");
+
             long curTime = System.currentTimeMillis();
             if (lastShake != 0 && (curTime - lastShake) < pauseThreshold) return;
 
             float x = event.values[0];
-            float y = event.values[1];
             float z = event.values[2];
 
-            float[] floats = {x, y, z};
-            Direction direction = Direction.fromValue(indexOfMax(floats));
+            Sound sound = resolveSound(x, z);
 
-            if(Math.abs(floats[direction.getIndex()]) > sensorThreshold){
-                Log.v("XYZ", Float.toString(x) + "   " + Float.toString(y) + "   " + Float.toString(z) + "   ");
+            if(sound.getAmplitude() > sensorThreshold){
+                Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
                 if(recording){
                     if (recordingMap.size() > MAX_RECORDING_SIZE) {
                         stopRecording();
                     }
-                    recordingMap.put(curTime-startRecording, direction);
+                    recordingMap.put(curTime-startRecording, sound);
                 }
-                playSound(direction, curTime);
+                playSound(sound, curTime);
             }
         }
     }
@@ -252,30 +251,22 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoTask.start();
     }
 
-    private int indexOfMax(float... values){
-        int maxIndex = 0;
-        for (int i = 1; i < values.length; i++){
-            if ((values[i] > values[maxIndex])){
-                maxIndex = i;
-            }
+    private Sound resolveSound(float x, float z){
+        if (Math.abs(x) > Math.abs(z)) {
+            return x > 0 ? mapSound(Direction.LEFT, x) : mapSound(Direction.RIGHT, x);
+        } else {
+            return z > 0 ? mapSound(Direction.UP, z) : mapSound(Direction.DOWN, z);
         }
-        return maxIndex;
     }
 
-    private void playSound(Direction direction, Long currentTime) {
-        switch (direction) {
-            case X:
-                soundPool.play(xSoundId, 1, 1, 1, 0, 1);
-                break;
-            case Y:
-                soundPool.play(ySoundId, 1, 1, 1, 0, 1);
-                break;
-            case Z:
-                soundPool.play(zSoundId, 1, 1, 1, 0, 1);
-                break;
-        }
+    private Sound mapSound(Direction direction, float amplitude) {
+        return new Sound(soundDirections.get(direction), Math.abs(amplitude));
+    }
 
-        if(currentTime != null)
+    private void playSound(Sound sound, Long currentTime) {
+        soundPool.play(sound.getSoundId(), 1, 1, 1, 0, 1);
+
+        if (currentTime != null)
             lastShake = currentTime;
     }
 
@@ -321,9 +312,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                     }
                 });
             }
-            Direction direction = recordingMap.get(System.currentTimeMillis() - startTime);
-            if(direction != null){
-                playSound(direction, null);
+            Sound sound = recordingMap.get(System.currentTimeMillis() - startTime);
+            if(sound != null){
+                playSound(sound, null);
                 playedDirections++;
             }
         }
