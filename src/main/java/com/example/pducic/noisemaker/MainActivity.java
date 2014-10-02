@@ -17,6 +17,9 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -44,8 +47,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private ImageButton playButton;
     private ImageButton recordButton;
     private long startRecording;
-    //TODO use linked list or some kind
-    private Map<Long, Sound> recordingMap = new HashMap<Long, Sound>();
+    private List<Sound> recordedSoundsCollection = new LinkedList<Sound>();
     private PlayTask playTask;
     private SoundPool soundPool;
     private Map<Direction, Integer> soundDirections = new HashMap<Direction, Integer>();
@@ -141,10 +143,11 @@ public class MainActivity extends Activity implements SensorEventListener {
             if(sound.getAmplitude() > sensorThreshold){
                 Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
                 if(recording){
-                    if (recordingMap.size() > MAX_RECORDING_SIZE) {
+                    if (recordedSoundsCollection.size() > MAX_RECORDING_SIZE) {
                         stopRecording();
                     }
-                    recordingMap.put(curTime-startRecording, sound);
+                    sound.setTime(curTime - startRecording);
+                    recordedSoundsCollection.add(sound);
                 }
                 playSound(sound, curTime);
             }
@@ -197,7 +200,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     private void startRecording() {
-        recordingMap.clear();
+        recordedSoundsCollection.clear();
         recording = true;
         startRecording = System.currentTimeMillis();
         recordButton.setBackgroundResource(android.R.color.darker_gray);
@@ -292,30 +295,32 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private class PlayTask extends Task {
 
-        private int playedDirections;
         private long startTime;
+        private Iterator<Sound> iterator;
+        private Sound next;
 
         @Override
         void start() {
             super.start();
-            playedDirections = 0;
+            iterator = recordedSoundsCollection.iterator();
+            next = iterator.next();
             startTime = System.currentTimeMillis();
         }
 
         @Override
         protected void process() {
-            if (playedDirections >= recordingMap.size()) {
+            if (next == null) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         stopPlaying();
                     }
                 });
+                return;
             }
-            Sound sound = recordingMap.get(System.currentTimeMillis() - startTime);
-            if(sound != null){
-                playSound(sound, null);
-                playedDirections++;
+            if(System.currentTimeMillis() - startTime > next.getTime()){
+                playSound(next, null);
+                next = iterator.hasNext()? iterator.next() : null;
             }
         }
     }
