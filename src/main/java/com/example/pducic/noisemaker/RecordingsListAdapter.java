@@ -27,10 +27,21 @@ public class RecordingsListAdapter extends ArrayAdapter<Recording> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.list_view_recording_item, parent, false);
+
+        long songLength = 0;
+        for (Recording value : values) {
+            long length = value.getRecordingLength();
+            if(length > songLength){
+                songLength = length;
+            }
+        }
+
+        RecordingView recordingView = (RecordingView) rowView.findViewById(R.id.recordingViewItem);
+        recordingView.setContent(values.get(position).getName(), songLength, values.get(position).getSounds());
         TextView textView = (TextView) rowView.findViewById(R.id.textViewItem);
         textView.setText(values.get(position).getName());
 
-        //here add other content in a recording row
+        //here add other content in a recording row. option for delete, volume, edit etc
 
         return rowView;
     }

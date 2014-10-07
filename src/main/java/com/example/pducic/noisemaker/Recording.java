@@ -22,4 +22,11 @@ public class Recording {
         return sounds;
     }
 
+    public long getRecordingLength(){
+        List<Sound> sounds = getSounds();
+        if(sounds.isEmpty()){
+            return 0;
+        }
+        return sounds.get(sounds.size()-1).getTime();
+    }
 }

@@ -49,6 +49,24 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/pause_threshold"
+        android:id="@+id/pauseView"
+        android:layout_below="@+id/sensorThresholdSlider" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pauseSlider"
+        android:layout_below="@+id/pauseView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/tempoSeekbar"
+        android:layout_alignEnd="@+id/tempoSeekbar" />
+
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,13 +92,13 @@
         android:layout_toRightOf="@+id/playTempoButton"
         android:layout_toEndOf="@+id/playTempoButton" />
 
-    <ListView
+    <com.example.pducic.noisemaker.RecordingsListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/recordingsList"
-        android:layout_below="@+id/sensorThresholdSlider"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/recordButton" />
+        android:layout_above="@+id/recordButton"
+        android:layout_below="@+id/pauseSlider" />
 
 </RelativeLayout>

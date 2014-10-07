@@ -3,6 +3,8 @@ package com.example.pducic.noisemaker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.drawable.TransitionDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
@@ -31,7 +34,7 @@ import java.util.PriorityQueue;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
-    private static final int IGNORE_EVENTS_AFTER_SOUND = 500;
+    private static final int IGNORE_EVENTS_AFTER_SOUND = 300;
     private static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
     private static final long DEFAULT_TEMPO = 1000;
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
@@ -59,6 +62,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private SoundPool soundPool;
     private Map<Direction, Integer> soundDirections = new HashMap<Direction, Integer>();
     private RecordingsListAdapter recordingsListAdapter;
+    private long songLength = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +72,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
 
         soundDirections.put(Direction.UP, soundPool.load(this, R.raw.g, 1));
-        soundDirections.put(Direction.DOWN, soundPool.load(this, R.raw.drums, 1));
+        soundDirections.put(Direction.DOWN, soundPool.load(this, R.raw.a_minor, 1));
         soundDirections.put(Direction.LEFT, soundPool.load(this, R.raw.c, 1));
         soundDirections.put(Direction.RIGHT, soundPool.load(this, R.raw.f, 1));
 
@@ -82,7 +86,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoTask = new TempoTask();
         playTask = new PlayTask();
         recordingsListAdapter = new RecordingsListAdapter(this, recordings);
-        ListView recordingsListView = (ListView) findViewById(R.id.recordingsList);
+        RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.recordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -120,6 +124,23 @@ public class MainActivity extends Activity implements SensorEventListener {
             }
         });
         sensorSlider.setProgress(thresholdToAccelerometerSlider(sensorThreshold));
+
+        SeekBar pauseSlider = (SeekBar)findViewById(R.id.pauseSlider);
+        pauseSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                pauseThreshold = sliderToPauseThreshold(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        pauseSlider.setProgress(thresholdToPauseSlider(pauseThreshold));
     }
 
     @Override
@@ -223,7 +244,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         isRecording = false;
         recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(true);
-        recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(recordings), new LinkedList<Sound>(currentRecording)));
+        recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(recordings), new ArrayList<Sound>(currentRecording)));
     }
 
     private int getNextEntryIndex(List<Recording> recordings) {
@@ -231,6 +252,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         String recordingString = getString(R.string.recording);
         String lastEntryName = recordings.get(recordings.size() - 1).getName();
         return Integer.valueOf(lastEntryName.substring(lastEntryName.indexOf(recordingString) + recordingString.length())) + 1;
+    }
+
+    private int thresholdToPauseSlider(int pauseThreshold) {
+        return (pauseThreshold - 100) / 20;
+    }
+
+    private int sliderToPauseThreshold(int progress) {
+        return 10 + progress * 20;
     }
 
     private int thresholdToAccelerometerSlider(float accelerometerThreshold) {

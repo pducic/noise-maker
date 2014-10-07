@@ -4,11 +4,17 @@
     android:layout_height="fill_parent"
     android:padding="10dp" >
 
+    <com.example.pducic.noisemaker.RecordingView
+        android:id="@+id/recordingViewItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="15dp" />
+
     <TextView
         android:id="@+id/textViewItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:textSize="15dp" />
-
 </RelativeLayout>
