@@ -3,8 +3,6 @@ package com.example.pducic.noisemaker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.graphics.drawable.TransitionDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,16 +17,12 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SeekBar;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 
 
@@ -56,13 +50,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     private ImageButton playButton;
     private ImageButton recordButton;
     private long startRecording;
-    private List<Sound> currentRecording = new LinkedList<Sound>();
+    private List<PlayingSound> currentRecording = new LinkedList<PlayingSound>();
     private List<Recording> recordings = new ArrayList<Recording>();
     private PlayTask playTask;
     private SoundPool soundPool;
-    private Map<Direction, Integer> soundDirections = new HashMap<Direction, Integer>();
     private RecordingsListAdapter recordingsListAdapter;
-    private long songLength = 0;
+    private SoundsConfiguration soundConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +63,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
-
-        soundDirections.put(Direction.UP, soundPool.load(this, R.raw.g, 1));
-        soundDirections.put(Direction.DOWN, soundPool.load(this, R.raw.a_minor, 1));
-        soundDirections.put(Direction.LEFT, soundPool.load(this, R.raw.c, 1));
-        soundDirections.put(Direction.RIGHT, soundPool.load(this, R.raw.f, 1));
+        soundConfiguration = new SoundsConfiguration(this, soundPool);
 
         tempoSound = MediaPlayer.create(this, R.raw.pop);
         setContentView(R.layout.main_activity);
@@ -85,7 +74,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, recordings);
+        recordingsListAdapter = new RecordingsListAdapter(this, recordings, soundConfiguration);
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.recordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -171,19 +160,21 @@ public class MainActivity extends Activity implements SensorEventListener {
             float x = event.values[0];
             float z = event.values[2];
 
-            Sound sound = resolveSound(x, z);
-
-            if(sound.getAmplitude() > sensorThreshold){
-                Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
-                if(isRecording){
-                    if (currentRecording.size() > MAX_RECORDING_SIZE) {
-                        stopRecording();
-                    }
-                    sound.setTime(curTime - startRecording);
-                    currentRecording.add(sound);
-                }
-                playSound(sound, curTime);
+            if(Math.abs(x) < sensorThreshold && Math.abs(z) < sensorThreshold){
+                return;
             }
+
+            PlayingSound playingSound = resolveSound(x, z);
+
+            Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
+            if (isRecording) {
+                if (currentRecording.size() > MAX_RECORDING_SIZE) {
+                    stopRecording();
+                }
+                playingSound.setTime(curTime - startRecording);
+                currentRecording.add(playingSound);
+            }
+            playSound(playingSound, curTime);
         }
     }
 
@@ -244,7 +235,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         isRecording = false;
         recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(true);
-        recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(recordings), new ArrayList<Sound>(currentRecording)));
+        recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(recordings), new ArrayList<PlayingSound>(currentRecording)));
     }
 
     private int getNextEntryIndex(List<Recording> recordings) {
@@ -295,7 +286,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoTask.start();
     }
 
-    private Sound resolveSound(float x, float z){
+    private PlayingSound resolveSound(float x, float z){
         if (Math.abs(x) > Math.abs(z)) {
             return x > 0 ? mapSound(Direction.LEFT, x) : mapSound(Direction.RIGHT, x);
         } else {
@@ -303,12 +294,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     }
 
-    private Sound mapSound(Direction direction, float amplitude) {
-        return new Sound(soundDirections.get(direction), Math.abs(amplitude));
+    private PlayingSound mapSound(Direction direction, float amplitude) {
+        return new PlayingSound(soundConfiguration.getSoundId(direction), amplitude);
     }
 
-    private void playSound(Sound sound, Long currentTime) {
-        soundPool.play(sound.getSoundId(), 1, 1, 1, 0, 1);
+    private void playSound(PlayingSound playingSound, Long currentTime) {
+        soundPool.play(soundConfiguration.getSoundPoolId(playingSound.getSoundId()), 1, 1, 1, 0, 1);
 
         if (currentTime != null)
             lastShake = currentTime;
@@ -337,24 +328,24 @@ public class MainActivity extends Activity implements SensorEventListener {
     private class PlayTask extends Task {
 
         private long startTime;
-        private Sound next;
-        private PriorityQueue<Sound> soundsPriorityQueue;
+        private PlayingSound next;
+        private PriorityQueue<PlayingSound> soundsPriorityQueue;
 
         @Override
         void start() {
             super.start();
             int size = 0;
             for (Recording recording : recordings) {
-                size+=recording.getSounds().size();
+                size+=recording.getPlayingSounds().size();
             }
-            soundsPriorityQueue = new PriorityQueue<Sound>(size, new Comparator<Sound>() {
+            soundsPriorityQueue = new PriorityQueue<PlayingSound>(size, new Comparator<PlayingSound>() {
                 @Override
-                public int compare(Sound lhs, Sound rhs) {
+                public int compare(PlayingSound lhs, PlayingSound rhs) {
                     return lhs.getTime() < rhs.getTime() ? -1 : (lhs.getTime() == rhs.getTime() ? 0 : 1);
                 }
             });
             for (Recording recording : recordings) {
-                soundsPriorityQueue.addAll(recording.getSounds());
+                soundsPriorityQueue.addAll(recording.getPlayingSounds());
             }
             next = soundsPriorityQueue.isEmpty()? null : soundsPriorityQueue.poll();
             startTime = System.currentTimeMillis();

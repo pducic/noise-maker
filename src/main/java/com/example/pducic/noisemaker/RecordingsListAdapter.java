@@ -15,11 +15,13 @@ import java.util.List;
 public class RecordingsListAdapter extends ArrayAdapter<Recording> {
     private final Context context;
     private final List<Recording> values;
+    private final SoundsConfiguration soundConfiguration;
 
-    public RecordingsListAdapter(Context context, List<Recording> values) {
+    public RecordingsListAdapter(Context context, List<Recording> values, SoundsConfiguration soundsConfiguration) {
         super(context, R.layout.list_view_recording_item, values);
         this.context = context;
         this.values = values;
+        this.soundConfiguration = soundsConfiguration;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class RecordingsListAdapter extends ArrayAdapter<Recording> {
         }
 
         RecordingView recordingView = (RecordingView) rowView.findViewById(R.id.recordingViewItem);
-        recordingView.setContent(values.get(position).getName(), songLength, values.get(position).getSounds());
+        recordingView.setContent(values.get(position).getName(), songLength, values.get(position).getPlayingSounds(), soundConfiguration);
         TextView textView = (TextView) rowView.findViewById(R.id.textViewItem);
         textView.setText(values.get(position).getName());
 

@@ -7,26 +7,26 @@ import java.util.List;
  */
 public class Recording {
     private String name;
-    private List<Sound> sounds;
+    private List<PlayingSound> playingSounds;
 
-    public Recording(String name, List<Sound> sounds) {
+    public Recording(String name, List<PlayingSound> playingSounds) {
         this.name = name;
-        this.sounds = sounds;
+        this.playingSounds = playingSounds;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Sound> getSounds() {
-        return sounds;
+    public List<PlayingSound> getPlayingSounds() {
+        return playingSounds;
     }
 
     public long getRecordingLength(){
-        List<Sound> sounds = getSounds();
-        if(sounds.isEmpty()){
+        List<PlayingSound> playingSounds = getPlayingSounds();
+        if(playingSounds.isEmpty()){
             return 0;
         }
-        return sounds.get(sounds.size()-1).getTime();
+        return playingSounds.get(playingSounds.size()-1).getTime();
     }
 }
