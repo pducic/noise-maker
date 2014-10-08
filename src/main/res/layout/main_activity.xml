@@ -98,7 +98,17 @@
         android:id="@+id/recordingsList"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/pauseSlider"
+        android:layout_above="@+id/playingSeekBar" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/playingSeekBar"
         android:layout_above="@+id/recordButton"
-        android:layout_below="@+id/pauseSlider" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

@@ -33,6 +33,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     private static final long DEFAULT_TEMPO = 1000;
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
     private static final int MAX_RECORDING_SIZE = 1000;
+    /**
+     * [1-100] greater -> rougher
+     */
+    private static final int SEEKBAR_GRANULARITY = 1;
 
     // SoundPool constants
     private static final int MAX_STREAMS = 3; // 3 sounds for now, TODO - make it configurable
@@ -51,11 +55,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     private ImageButton recordButton;
     private long startRecording;
     private List<PlayingSound> currentRecording = new LinkedList<PlayingSound>();
-    private List<Recording> recordings = new ArrayList<Recording>();
+    private Song song = new Song();
+
     private PlayTask playTask;
     private SoundPool soundPool;
     private RecordingsListAdapter recordingsListAdapter;
     private SoundsConfiguration soundConfiguration;
+    private SeekBar playingSeekbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, recordings, soundConfiguration);
+        recordingsListAdapter = new RecordingsListAdapter(this, song, soundConfiguration);
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.recordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -84,7 +90,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                         .setMessage("Are you sure you want to delete this entry?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                recordingsListAdapter.remove(recordings.get(position));
+                                recordingsListAdapter.remove(song.getRecordings().get(position));
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -130,6 +136,8 @@ public class MainActivity extends Activity implements SensorEventListener {
             }
         });
         pauseSlider.setProgress(thresholdToPauseSlider(pauseThreshold));
+
+        playingSeekbar = (SeekBar)findViewById(R.id.playingSeekBar);
     }
 
     @Override
@@ -229,13 +237,17 @@ public class MainActivity extends Activity implements SensorEventListener {
         startRecording = System.currentTimeMillis();
         recordButton.setBackgroundResource(android.R.color.darker_gray);
         playButton.setEnabled(false);
+        playTask.setMute(true);
+        playTask.start();
     }
 
     private void stopRecording() {
         isRecording = false;
         recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(true);
-        recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(recordings), new ArrayList<PlayingSound>(currentRecording)));
+        recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(song.getRecordings()), new ArrayList<PlayingSound>(currentRecording)));
+        playTask.setMute(false);
+        playTask.stop();
     }
 
     private int getNextEntryIndex(List<Recording> recordings) {
@@ -330,13 +342,19 @@ public class MainActivity extends Activity implements SensorEventListener {
         private long startTime;
         private PlayingSound next;
         private PriorityQueue<PlayingSound> soundsPriorityQueue;
+        private long songDuration;
+        private int percent = 0;
+
+        private boolean mute = false;
 
         @Override
         void start() {
             super.start();
             int size = 0;
-            for (Recording recording : recordings) {
-                size+=recording.getPlayingSounds().size();
+            if (song.getRecordings().isEmpty()) return;
+
+            for (Recording recording : song.getRecordings()) {
+                size += recording.getPlayingSounds().size();
             }
             soundsPriorityQueue = new PriorityQueue<PlayingSound>(size, new Comparator<PlayingSound>() {
                 @Override
@@ -344,11 +362,27 @@ public class MainActivity extends Activity implements SensorEventListener {
                     return lhs.getTime() < rhs.getTime() ? -1 : (lhs.getTime() == rhs.getTime() ? 0 : 1);
                 }
             });
-            for (Recording recording : recordings) {
+            for (Recording recording : song.getRecordings()) {
                 soundsPriorityQueue.addAll(recording.getPlayingSounds());
             }
-            next = soundsPriorityQueue.isEmpty()? null : soundsPriorityQueue.poll();
+            next = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
+            songDuration = song.getDuration();
             startTime = System.currentTimeMillis();
+        }
+
+        public void setMute(boolean mute) {
+            this.mute = mute;
+        }
+
+        @Override
+        void stop() {
+            super.stop();
+            reset();
+        }
+
+        private synchronized void reset() {
+            percent = 0;
+            playingSeekbar.setProgress(0);
         }
 
         @Override
@@ -360,11 +394,25 @@ public class MainActivity extends Activity implements SensorEventListener {
                         stopPlaying();
                     }
                 });
+                stop();
                 return;
             }
-            if(System.currentTimeMillis() - startTime > next.getTime()){
-                playSound(next, null);
-                next = soundsPriorityQueue.isEmpty()? null : soundsPriorityQueue.poll();
+            final long currentSongTime = System.currentTimeMillis() - startTime;
+            final int progress = (int) (100 * (1.0 * currentSongTime / songDuration));
+            if (progress > percent + SEEKBAR_GRANULARITY) {
+                percent = progress;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        playingSeekbar.setProgress(progress);
+                    }
+                });
+                if (currentSongTime > next.getTime()) {
+                    if(!mute) {
+                        playSound(next, null);
+                    }
+                    next = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
+                }
             }
         }
     }
