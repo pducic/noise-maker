@@ -138,6 +138,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         pauseSlider.setProgress(thresholdToPauseSlider(pauseThreshold));
 
         playingSeekbar = (SeekBar)findViewById(R.id.playingSeekBar);
+        playingSeekbar.setEnabled(false);
     }
 
     @Override
