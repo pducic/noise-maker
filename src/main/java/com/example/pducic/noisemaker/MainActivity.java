@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
@@ -62,6 +63,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private RecordingsListAdapter recordingsListAdapter;
     private SoundsConfiguration soundConfiguration;
     private SeekBar playingSeekbar;
+    private boolean normalizeSong;
+    private int tempo = 40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +140,22 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         pauseSlider.setProgress(thresholdToPauseSlider(pauseThreshold));
 
+        tempoSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tempo = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        tempoSlider.setProgress(tempo);
+
         playingSeekbar = (SeekBar)findViewById(R.id.playingSeekBar);
         playingSeekbar.setEnabled(false);
     }
@@ -183,7 +202,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 playingSound.setTime(curTime - startRecording);
                 currentRecording.add(playingSound);
             }
-            playSound(playingSound, curTime);
+            playSound(new PlayingSound[]{playingSound}, curTime);
         }
     }
 
@@ -311,11 +330,18 @@ public class MainActivity extends Activity implements SensorEventListener {
         return new PlayingSound(soundConfiguration.getSoundId(direction), amplitude);
     }
 
-    private void playSound(PlayingSound playingSound, Long currentTime) {
-        soundPool.play(soundConfiguration.getSoundPoolId(playingSound.getSoundId()), 1, 1, 1, 0, 1);
+    private void playSound(PlayingSound[] playingSound, Long currentTime) {
+        for (PlayingSound sound : playingSound) {
+            Log.i("Playing", sound.toString());
+            soundPool.play(soundConfiguration.getSoundPoolId(sound.getSoundId()), 1, 1, 1, 0, 1);
+        }
 
         if (currentTime != null)
             lastShake = currentTime;
+    }
+
+    public void onNormalizeSongCheckboxToggle(View view) {
+        normalizeSong = ((CheckBox) view).isChecked();
     }
 
     private class TempoTask extends Task {
@@ -364,7 +390,14 @@ public class MainActivity extends Activity implements SensorEventListener {
                 }
             });
             for (Recording recording : song.getRecordings()) {
-                soundsPriorityQueue.addAll(recording.getPlayingSounds());
+                for (PlayingSound playingSound : recording.getPlayingSounds()) {
+                    if (normalizeSong) {
+                        int factor = tempo / 5;
+                        soundsPriorityQueue.add(new PlayingSound(playingSound.getSoundId(), playingSound.getAmplitude(), (playingSound.getTime() >> factor  << factor)));
+                    } else {
+                        soundsPriorityQueue.add(playingSound);
+                    }
+                }
             }
             next = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
             songDuration = song.getDuration();
@@ -409,10 +442,17 @@ public class MainActivity extends Activity implements SensorEventListener {
                     }
                 });
                 if (currentSongTime > next.getTime()) {
-                    if(!mute) {
-                        playSound(next, null);
+                    List<PlayingSound> sameMilliSounds = new LinkedList<PlayingSound>();
+                    sameMilliSounds.add(next);
+                    PlayingSound temp = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
+                    while (temp != null && temp.getTime() == next.getTime()){
+                        sameMilliSounds.add(temp);
+                        temp = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
                     }
-                    next = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
+                    if(!mute) {
+                        playSound(sameMilliSounds.toArray(new PlayingSound[sameMilliSounds.size()]), null);
+                    }
+                    next = temp;
                 }
             }
         }

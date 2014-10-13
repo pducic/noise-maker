@@ -12,5 +12,6 @@
     <string name="stop">Stop</string>
     <string name="play">Play</string>
     <string name="recording">Recording_</string>
+    <string name="normalizeSong">Fix</string>
 
 </resources>

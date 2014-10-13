@@ -1,7 +1,8 @@
 package com.example.pducic.noisemaker;
 
 /**
- * Created by pducic on 01.10.14..
+ * Created by pducic on 01.10.14.
+ *
  */
 public class PlayingSound {
     public PlayingSound(String soundId, float amplitude, long time) {
@@ -34,4 +35,12 @@ public class PlayingSound {
         return amplitude;
     }
 
+    @Override
+    public String toString() {
+        return "PlayingSound{" +
+                "time=" + time +
+                ", soundId='" + soundId + '\'' +
+                ", amplitude=" + amplitude +
+                '}';
+    }
 }
