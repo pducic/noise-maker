@@ -1,15 +1,16 @@
 package com.example.pducic.noisemaker;
 
 /**
- * Created by pducic on 08.10.14.
+ * Created by pducic on 08.10.14
  */
 public class Sound {
-    private String id;
+    @SuppressWarnings("unused")
+    private String name;
     private int resourceId;
     private SoundPreview soundPreview;
 
-    public Sound(String id, int resourceId, SoundPreview soundPreview) {
-        this.id = id;
+    public Sound(String name, int resourceId, SoundPreview soundPreview) {
+        this.name = name;
         this.resourceId = resourceId;
         this.soundPreview = soundPreview;
     }

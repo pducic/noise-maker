@@ -65,17 +65,22 @@ public class MainActivity extends Activity implements SensorEventListener {
     private SeekBar playingSeekbar;
     private boolean normalizeSong;
     private int tempo = 40;
+    private Button leftConfigButton;
+    private Button rightConfigButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setContentView(R.layout.main_activity);
 
         soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
         soundConfiguration = new SoundsConfiguration(this, soundPool);
 
+        leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
+        rightConfigButton = (Button) findViewById(R.id.rightConfigButton);
+
         tempoSound = MediaPlayer.create(this, R.raw.pop);
-        setContentView(R.layout.main_activity);
         tempoButton = (Button) findViewById(R.id.playTempoButton);
         tempoSlider = (SeekBar)findViewById(R.id.tempoSeekbar);
         playButton = (ImageButton) findViewById(R.id.playButton);
@@ -193,6 +198,9 @@ public class MainActivity extends Activity implements SensorEventListener {
             }
 
             PlayingSound playingSound = resolveSound(x, z);
+            if(playingSound == null){
+                return;
+            }
 
             Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
             if (isRecording) {
@@ -320,14 +328,24 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private PlayingSound resolveSound(float x, float z){
         if (Math.abs(x) > Math.abs(z)) {
-            return x > 0 ? mapSound(Direction.LEFT, x) : mapSound(Direction.RIGHT, x);
+            return x > 0 ? mapSound(Direction.UP, x) : mapSound(Direction.DOWN, x);
         } else {
-            return z > 0 ? mapSound(Direction.UP, z) : mapSound(Direction.DOWN, z);
+            return z > 0 ? mapSound(Direction.LEFT, z) : mapSound(Direction.RIGHT, z);
         }
     }
 
     private PlayingSound mapSound(Direction direction, float amplitude) {
-        return new PlayingSound(soundConfiguration.getSoundId(direction), amplitude);
+        SoundsConfiguration.ConfigurationButtonId buttonId;
+        if(leftConfigButton.isPressed()){
+            buttonId = SoundsConfiguration.ConfigurationButtonId.LEFT;
+        }
+        else if(rightConfigButton.isPressed()){
+            buttonId = SoundsConfiguration.ConfigurationButtonId.RIGHT;
+        }
+        else{
+            return null;
+        }
+        return new PlayingSound(soundConfiguration.getSoundId(direction, buttonId), amplitude);
     }
 
     private void playSound(PlayingSound[] playingSound, Long currentTime) {

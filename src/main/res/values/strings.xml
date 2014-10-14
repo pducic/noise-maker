@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Jammin\'</string>
-    <string name="start_tempo">Play Tempo</string>
-    <string name="stop_tempo">Stop Tempo</string>
+    <string name="start_tempo">Tempo</string>
+    <string name="stop_tempo">Stop</string>
     <string name="sensor_threshold">Sensor Threshold</string>
     <string name="pause_threshold">Pause After Sound</string>
     <string name="tempo_speed">Tempo Speed</string>
@@ -13,5 +13,7 @@
     <string name="play">Play</string>
     <string name="recording">Recording_</string>
     <string name="normalizeSong">Fix</string>
+    <string name="leftConfigButton">L</string>
+    <string name="rightConfigButton">R</string>
 
 </resources>
