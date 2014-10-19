@@ -1,9 +1,10 @@
 package com.example.pducic.noisemaker;
 
+import android.os.Process;
 import android.util.Log;
 
 /**
- * Created by pducic on 24.09.14..
+ * Created by pducic on 24.09.14.
  */
 //TODO use android intent service
 public abstract class Task implements Runnable {
@@ -19,7 +20,7 @@ public abstract class Task implements Runnable {
                 return;
 
             thread = new Thread(this);
-            thread.setPriority(Thread.MAX_PRIORITY);
+            Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
             running = true;
             thread.start();

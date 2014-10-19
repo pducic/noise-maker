@@ -18,10 +18,10 @@ public class SoundsConfiguration {
 
     public SoundsConfiguration(Context context, SoundPool soundPool) {
         //predefined in app / storage
-        sounds.put("g_G", new Sound("guitar G", R.raw.g, new SoundPreview(android.R.color.holo_red_dark)));
-        sounds.put("g_a", new Sound("guitar a", R.raw.a_minor, new SoundPreview(android.R.color.holo_blue_dark)));
-        sounds.put("g_C", new Sound("guitar C", R.raw.c, new SoundPreview(android.R.color.holo_green_dark)));
-        sounds.put("g_F", new Sound("guitar F", R.raw.f, new SoundPreview(android.R.color.black)));
+        sounds.put("g_G", new Sound("guitar G", R.raw.stand_by_me_a_major, new SoundPreview(android.R.color.holo_red_dark)));
+        sounds.put("g_a", new Sound("guitar a", R.raw.stand_by_me_cis_minor, new SoundPreview(android.R.color.holo_blue_dark)));
+        sounds.put("g_C", new Sound("guitar C", R.raw.stand_by_me_e_major, new SoundPreview(android.R.color.holo_green_dark)));
+        sounds.put("g_F", new Sound("guitar F", R.raw.stand_by_me_h_major, new SoundPreview(android.R.color.black)));
         sounds.put("d_hat", new Sound("drum hat", R.raw.drum_hat_open, new SoundPreview(android.R.color.holo_orange_dark)));
         sounds.put("d_kick", new Sound("drum kick", R.raw.drum_prac_kick, new SoundPreview(android.R.color.holo_purple)));
         sounds.put("d_snare", new Sound("drum snare", R.raw.drum_prac_snare, new SoundPreview(android.R.color.darker_gray)));

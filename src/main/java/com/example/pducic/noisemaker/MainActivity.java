@@ -265,7 +265,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         startRecording = System.currentTimeMillis();
         recordButton.setBackgroundResource(android.R.color.darker_gray);
         playButton.setEnabled(false);
-        playTask.setMute(true);
         playTask.start();
     }
 
@@ -274,7 +273,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(true);
         recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(song.getRecordings()), new ArrayList<PlayingSound>(currentRecording)));
-        playTask.setMute(false);
         playTask.stop();
     }
 
@@ -401,6 +399,10 @@ public class MainActivity extends Activity implements SensorEventListener {
             for (Recording recording : song.getRecordings()) {
                 size += recording.getPlayingSounds().size();
             }
+            if(size == 0){
+                return;
+            }
+
             soundsPriorityQueue = new PriorityQueue<PlayingSound>(size, new Comparator<PlayingSound>() {
                 @Override
                 public int compare(PlayingSound lhs, PlayingSound rhs) {
@@ -420,10 +422,6 @@ public class MainActivity extends Activity implements SensorEventListener {
             next = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
             songDuration = song.getDuration();
             startTime = System.currentTimeMillis();
-        }
-
-        public void setMute(boolean mute) {
-            this.mute = mute;
         }
 
         @Override
