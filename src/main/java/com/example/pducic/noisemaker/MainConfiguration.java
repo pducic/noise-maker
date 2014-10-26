@@ -13,6 +13,14 @@ public class MainConfiguration {
     // SoundPool constants
     public static final int MAX_STREAMS = 3; // 3 sounds for now
     public static final int SRC_QUALITY = 0; // Android Docs: "The sample-rate converter quality. Currently has no effect. Use 0 for the default"
+    public static final int IGNORE_EVENTS_AFTER_SOUND = 300;
+    public static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
+    public static final long DEFAULT_TEMPO = 1000;
+    public static final int MAX_RECORDING_SIZE = 1000;
+    /**
+     * [1-100] greater -> rougher
+     */
+    public static final int SEEKBAR_GRANULARITY = 1;
 
     public static SoundsConfiguration getDefaultSoundConfiguration() {
         LinkedList<Sound> sounds = new LinkedList<Sound>();
@@ -34,7 +42,7 @@ public class MainConfiguration {
             add(new Level("Level 1", new Recording("Level 1", new ArrayList<PlayingSound>() {{
                 add(new PlayingSound("drum_prac_snare_rim", 0f, 2000));
                 add(new PlayingSound("drum_prac_kick", 0f, 3000));
-            }}), getDefaultSoundConfiguration(), 0.15f, Collections.<String>emptyList()));
+            }}), getDefaultSoundConfiguration(), 300, Collections.<String>emptyList()));
         }};
     }
 

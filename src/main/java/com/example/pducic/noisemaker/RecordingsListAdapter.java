@@ -14,12 +14,14 @@ public class RecordingsListAdapter extends ArrayAdapter<Recording> {
     private final Context context;
     private final Song song;
     private final SoundsConfiguration soundConfiguration;
+    private final long songDuration;
 
-    public RecordingsListAdapter(Context context, Song song, SoundsConfiguration soundsConfiguration) {
+    public RecordingsListAdapter(Context context, Song song, SoundsConfiguration soundsConfiguration, long songDuration) {
         super(context, R.layout.list_view_recording_item, song.getRecordings());
         this.context = context;
         this.song = song;
         this.soundConfiguration = soundsConfiguration;
+        this.songDuration = songDuration;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class RecordingsListAdapter extends ArrayAdapter<Recording> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.list_view_recording_item, parent, false);
 
-        long songLength = song.getDuration();
+        long songLength = Math.max(song.getDuration(), songDuration);
 
         RecordingView recordingView = (RecordingView) rowView.findViewById(R.id.recordingViewItem);
         Recording recording = song.getRecordings().get(position);

@@ -13,17 +13,14 @@ public class Level implements Serializable{
     private String name;
     private Recording goal;
     private SoundsConfiguration soundsConfiguration;
-    /**
-     * interval [0, 1]
-     */
-    private float tolerance;
+    private int mistakeMillis;
     private Collection<String> rewardSounds;
 
-    public Level(String name, Recording goal, SoundsConfiguration soundsConfiguration, float tolerance, Collection<String> rewardSounds) {
+    public Level(String name, Recording goal, SoundsConfiguration soundsConfiguration, int mistakeMillis, Collection<String> rewardSounds) {
         this.name = name;
         this.goal = goal;
         this.soundsConfiguration = soundsConfiguration;
-        this.tolerance = tolerance;
+        this.mistakeMillis = mistakeMillis;
         this.rewardSounds = rewardSounds;
     }
 
@@ -39,8 +36,8 @@ public class Level implements Serializable{
         return soundsConfiguration;
     }
 
-    public float getTolerance() {
-        return tolerance;
+    public int getMistakeMillis() {
+        return mistakeMillis;
     }
 
     public Collection<String> getRewardSounds() {

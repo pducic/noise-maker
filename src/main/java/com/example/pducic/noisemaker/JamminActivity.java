@@ -29,21 +29,11 @@ import java.util.PriorityQueue;
 
 public class JamminActivity extends Activity implements SensorEventListener {
 
-    private static final int IGNORE_EVENTS_AFTER_SOUND = 300;
-    private static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
-    private static final long DEFAULT_TEMPO = 1000;
+    private SoundPool soundPool;
+    private SoundsConfiguration soundsConfiguration;
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
-    private static final int MAX_RECORDING_SIZE = 1000;
-    /**
-     * [1-100] greater -> rougher
-     */
-    private static final int SEEKBAR_GRANULARITY = 1;
-
-    protected SoundPool soundPool;
-    protected SoundsConfiguration soundsConfiguration;
-
-    private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
-    private float sensorThreshold = POSITIVE_COUNTER_THRESHOLD;
+    private int pauseThreshold = MainConfiguration.IGNORE_EVENTS_AFTER_SOUND;
+    private float sensorThreshold = MainConfiguration.POSITIVE_COUNTER_THRESHOLD;
     private MediaPlayer tempoSound;
     private long lastShake = 0;
     private TempoTask tempoTask;
@@ -84,10 +74,10 @@ public class JamminActivity extends Activity implements SensorEventListener {
         tempoSlider = (SeekBar)findViewById(R.id.tempoSeekbar);
         playButton = (ImageButton) findViewById(R.id.playButton);
         recordButton = (ImageButton) findViewById(R.id.recordButton);
-        tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
+        tempoSlider.setProgress(tempoToSlider(MainConfiguration.DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration);
+        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration, 0);
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.recordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -203,7 +193,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
 
             Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
             if (isRecording) {
-                if (currentRecording.size() > MAX_RECORDING_SIZE) {
+                if (currentRecording.size() > MainConfiguration.MAX_RECORDING_SIZE) {
                     stopRecording();
                 }
                 playingSound.setTime(curTime - startRecording);
@@ -247,6 +237,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         Log.i("Play", "Starting...");
         isPlaying = true;
         playButton.setImageResource(R.drawable.ic_action_stop);
+        playTask.setSongDuration(0);
         playTask.start();
 
     }
@@ -264,6 +255,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         startRecording = System.currentTimeMillis();
         recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(false);
+        playTask.setSongDuration(0);
         playTask.start();
     }
 
@@ -384,6 +376,9 @@ public class JamminActivity extends Activity implements SensorEventListener {
         }
     }
 
+    /**
+     * TODO extract and pass events through broadcast
+     */
     private class PlayTask extends Task {
 
         private long startTime;
@@ -398,6 +393,9 @@ public class JamminActivity extends Activity implements SensorEventListener {
         void start() {
             super.start();
             int size = 0;
+            songDuration = Math.max(song.getDuration(), songDuration);
+            startTime = System.currentTimeMillis();
+
             if (song.getRecordings().isEmpty()) return;
 
             for (Recording recording : song.getRecordings()) {
@@ -415,17 +413,14 @@ public class JamminActivity extends Activity implements SensorEventListener {
             });
             for (Recording recording : song.getRecordings()) {
                 for (PlayingSound playingSound : recording.getPlayingSounds()) {
-                    if (normalizeSong) {
-                        int factor = tempo / 5;
-                        soundsPriorityQueue.add(new PlayingSound(playingSound.getSoundId(), playingSound.getAmplitude(), (playingSound.getTime() >> factor  << factor)));
-                    } else {
-                        soundsPriorityQueue.add(playingSound);
-                    }
+                    soundsPriorityQueue.add(playingSound);
                 }
             }
             next = soundsPriorityQueue.isEmpty() ? null : soundsPriorityQueue.poll();
-            songDuration = song.getDuration();
-            startTime = System.currentTimeMillis();
+        }
+
+        public void setSongDuration(long songDuration) {
+            this.songDuration = songDuration;
         }
 
         @Override
@@ -441,19 +436,21 @@ public class JamminActivity extends Activity implements SensorEventListener {
 
         @Override
         protected void process() {
-            if (next == null) {
+            long currentTimeMillis = System.currentTimeMillis();
+            if (next == null && songDuration < (currentTimeMillis - startTime)) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         stopPlaying();
                     }
                 });
+
                 stop();
                 return;
             }
-            final long currentSongTime = System.currentTimeMillis() - startTime;
+            final long currentSongTime = currentTimeMillis - startTime;
             final int progress = (int) (100 * (1.0 * currentSongTime / songDuration));
-            if (progress > percent + SEEKBAR_GRANULARITY) {
+            if (progress > percent + MainConfiguration.SEEKBAR_GRANULARITY) {
                 percent = progress;
                 runOnUiThread(new Runnable() {
                     @Override
@@ -461,6 +458,9 @@ public class JamminActivity extends Activity implements SensorEventListener {
                         playingSeekbar.setProgress(progress);
                     }
                 });
+                if(next == null){
+                    return;
+                }
                 if (currentSongTime > next.getTime()) {
                     List<PlayingSound> sameMilliSounds = new LinkedList<PlayingSound>();
                     sameMilliSounds.add(next);
