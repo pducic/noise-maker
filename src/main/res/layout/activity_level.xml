@@ -1,0 +1,86 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.pducic.noisemaker.LevelActivity">
+
+    <TextView
+        android:text="@string/goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/goalTextView" />
+
+    <com.example.pducic.noisemaker.RecordingView
+        android:id="@+id/levelGoalRecordingView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/goalTextView"
+        android:minHeight="@dimen/minGoalRecordingHeight"/>
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/levelPlayingSeekBar"
+        android:layout_below="@+id/levelGoalRecordingView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="@string/recording_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/recordResultTextView"
+        android:layout_below="@+id/levelPlayingSeekBar"/>
+
+    <com.example.pducic.noisemaker.RecordingsListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/levelRecordingsList"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/recordResultTextView"
+        android:layout_above="@+id/recordButton" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/recordButton"
+        android:onClick="onRecordClick"
+        android:src="@drawable/ic_action_mic"
+        android:background="@android:color/darker_gray"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/levelPlayingPanel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+    <include layout="@layout/playing_panel"
+        android:id="@+id/levelPlayingPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/levelPlayButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/play"
+        android:id="@+id/levelPlayButton"
+        android:onClick="onPlayClick"
+        android:src="@drawable/ic_action_play"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

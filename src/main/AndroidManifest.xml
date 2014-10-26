@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".MainMenuActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,7 +16,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".JamminActivity"
+            android:label="@string/app_name" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pducic.noisemaker.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name=".LevelsConfigurationActivity"
+            android:label="@string/title_activity_levels"
+            android:parentActivityName=".MainMenuActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pducic.noisemaker.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name=".LevelActivity"
+            android:label="@string/title_activity_level" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pducic.noisemaker.LevelsConfigurationActivity" />
+        </activity>
     </application>
 
     <uses-feature

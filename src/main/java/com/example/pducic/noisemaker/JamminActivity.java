@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 
-public class MainActivity extends Activity implements SensorEventListener {
+public class JamminActivity extends Activity implements SensorEventListener {
 
     private static final int IGNORE_EVENTS_AFTER_SOUND = 300;
     private static final float POSITIVE_COUNTER_THRESHOLD = (float) 5.0;
@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.activity_jammin);
 
         soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
         soundConfiguration = new SoundsConfiguration(this, soundPool);
@@ -93,7 +93,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                new AlertDialog.Builder(MainActivity.this)
+                new AlertDialog.Builder(JamminActivity.this)
                         .setTitle("Delete entry")
                         .setMessage("Are you sure you want to delete this entry?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -263,14 +263,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentRecording.clear();
         isRecording = true;
         startRecording = System.currentTimeMillis();
-        recordButton.setBackgroundResource(android.R.color.darker_gray);
+        recordButton.setBackgroundResource(android.R.color.holo_red_dark);
         playButton.setEnabled(false);
         playTask.start();
     }
 
     private void stopRecording() {
         isRecording = false;
-        recordButton.setBackgroundResource(android.R.color.holo_red_dark);
+        recordButton.setBackgroundResource(android.R.color.darker_gray);
         playButton.setEnabled(true);
         recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(song.getRecordings()), new ArrayList<PlayingSound>(currentRecording)));
         playTask.stop();

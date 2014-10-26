@@ -31,6 +31,9 @@ public class RecordingView extends TextView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if(soundsConfiguration == null || playingSounds == null){
+            return;
+        }
         Drawable[] drawables = new Drawable[playingSounds.size()];
         for (int i = 0; i < playingSounds.size(); i++) {
             ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
@@ -48,7 +51,7 @@ public class RecordingView extends TextView {
 
     @Override
     public boolean isInEditMode() {
-        return true;
+        return false;
     }
 
     public void setContent(String name, long songLength, List<PlayingSound> playingSounds, SoundsConfiguration soundsConfiguration) {
