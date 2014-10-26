@@ -30,27 +30,24 @@ public class RecordingView extends TextView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if(soundsConfiguration == null || playingSounds == null){
-            return;
-        }
-        Drawable[] drawables = new Drawable[playingSounds.size()];
-        for (int i = 0; i < playingSounds.size(); i++) {
-            ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
+        if(!isInEditMode()) {
+            if (soundsConfiguration == null || playingSounds == null) {
+                return;
+            }
+            Drawable[] drawables = new Drawable[playingSounds.size()];
+            for (int i = 0; i < playingSounds.size(); i++) {
+                ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
 
-            soundDrawable.getPaint().setColor(getResources().getColor(soundsConfiguration.getSoundPreview(playingSounds.get(i).getSoundId()).getColor()));
-            int x = (int)(1.0 * getWidth() * playingSounds.get(i).getTime() / songLength);
-            int y = 0;
-            soundDrawable.setBounds(x - SOUND_SHAPE_RADIUS, y, x, y + SOUND_SHAPE_RADIUS);
-            Log.d("Sound", "x:" + x + ",y:" + y);
-            drawables[i] = soundDrawable;
+                soundDrawable.getPaint().setColor(getResources().getColor(soundsConfiguration.getSoundPreview(playingSounds.get(i).getSoundId()).getColor()));
+                int x = (int) (1.0 * getWidth() * playingSounds.get(i).getTime() / songLength);
+                int y = 0;
+                soundDrawable.setBounds(x - SOUND_SHAPE_RADIUS, y, x, y + SOUND_SHAPE_RADIUS);
+                Log.d("Sound", "x:" + x + ",y:" + y);
+                drawables[i] = soundDrawable;
+            }
+            mDrawable = new LayerDrawable(drawables);
+            mDrawable.draw(canvas);
         }
-        mDrawable = new LayerDrawable(drawables);
-        mDrawable.draw(canvas);
-    }
-
-    @Override
-    public boolean isInEditMode() {
-        return false;
     }
 
     public void setContent(long songLength, List<PlayingSound> playingSounds, SoundsConfiguration soundsConfiguration) {

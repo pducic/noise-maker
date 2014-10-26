@@ -1,11 +1,7 @@
 package com.example.pducic.noisemaker;
 
-import android.content.Context;
-import android.media.SoundPool;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +11,7 @@ import java.util.List;
 public class MainConfiguration {
 
     // SoundPool constants
-    public static final int MAX_STREAMS = 3; // 3 sounds for now, TODO - make it configurable
+    public static final int MAX_STREAMS = 3; // 3 sounds for now
     public static final int SRC_QUALITY = 0; // Android Docs: "The sample-rate converter quality. Currently has no effect. Use 0 for the default"
 
     public static SoundsConfiguration getDefaultSoundConfiguration() {

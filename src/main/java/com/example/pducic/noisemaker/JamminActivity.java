@@ -39,6 +39,9 @@ public class JamminActivity extends Activity implements SensorEventListener {
      */
     private static final int SEEKBAR_GRANULARITY = 1;
 
+    protected SoundPool soundPool;
+    protected SoundsConfiguration soundsConfiguration;
+
     private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
     private float sensorThreshold = POSITIVE_COUNTER_THRESHOLD;
     private MediaPlayer tempoSound;
@@ -52,12 +55,10 @@ public class JamminActivity extends Activity implements SensorEventListener {
     private ImageButton recordButton;
     private long startRecording;
     private List<PlayingSound> currentRecording = new LinkedList<PlayingSound>();
-    private Song song = new Song();
 
+    private Song song = new Song();
     private PlayTask playTask;
-    private SoundPool soundPool;
     private RecordingsListAdapter recordingsListAdapter;
-    private SoundsConfiguration soundConfiguration;
     private SeekBar playingSeekbar;
     private boolean normalizeSong;
     private int tempo = 40;
@@ -71,8 +72,9 @@ public class JamminActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_jammin);
 
         soundPool = new SoundPool(MainConfiguration.MAX_STREAMS, AudioManager.STREAM_MUSIC, MainConfiguration.SRC_QUALITY);
-        soundConfiguration = MainConfiguration.getDefaultSoundConfiguration();
-        soundConfiguration.init(this, soundPool);
+
+        soundsConfiguration = MainConfiguration.getDefaultSoundConfiguration();
+        soundsConfiguration.init(this, soundPool);
 
         leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
         rightConfigButton = (Button) findViewById(R.id.rightConfigButton);
@@ -85,7 +87,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         tempoSlider.setProgress(tempoToSlider(DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, song, soundConfiguration);
+        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration);
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.recordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -256,7 +258,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         playTask.stop();
     }
 
-    private void startRecording() {
+    protected void startRecording() {
         currentRecording.clear();
         isRecording = true;
         startRecording = System.currentTimeMillis();
@@ -265,7 +267,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         playTask.start();
     }
 
-    private void stopRecording() {
+    protected void stopRecording() {
         isRecording = false;
         recordButton.setBackgroundResource(android.R.color.darker_gray);
         playButton.setEnabled(true);
@@ -340,7 +342,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         else{
             return null;
         }
-        String soundId = soundConfiguration.getSoundId(direction, buttonId);
+        String soundId = soundsConfiguration.getSoundId(direction, buttonId);
         if(soundId == null){
             return null;
         }
@@ -350,7 +352,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
     private void playSound(PlayingSound[] playingSound, Long currentTime) {
         for (PlayingSound sound : playingSound) {
             Log.i("Playing", sound.toString());
-            Integer soundPoolId = soundConfiguration.getSoundPoolId(sound.getSoundId());
+            Integer soundPoolId = soundsConfiguration.getSoundPoolId(sound.getSoundId());
             soundPool.play(soundPoolId, 1, 1, 1, 0, 1);
         }
 
