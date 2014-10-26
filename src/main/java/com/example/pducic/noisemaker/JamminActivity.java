@@ -39,10 +39,6 @@ public class JamminActivity extends Activity implements SensorEventListener {
      */
     private static final int SEEKBAR_GRANULARITY = 1;
 
-    // SoundPool constants
-    private static final int MAX_STREAMS = 3; // 3 sounds for now, TODO - make it configurable
-    private static final int SRC_QUALITY = 0; // Android Docs: "The sample-rate converter quality. Currently has no effect. Use 0 for the default"
-
     private int pauseThreshold = IGNORE_EVENTS_AFTER_SOUND;
     private float sensorThreshold = POSITIVE_COUNTER_THRESHOLD;
     private MediaPlayer tempoSound;
@@ -74,8 +70,9 @@ public class JamminActivity extends Activity implements SensorEventListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_jammin);
 
-        soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, SRC_QUALITY);
-        soundConfiguration = new SoundsConfiguration(this, soundPool);
+        soundPool = new SoundPool(MainConfiguration.MAX_STREAMS, AudioManager.STREAM_MUSIC, MainConfiguration.SRC_QUALITY);
+        soundConfiguration = MainConfiguration.getDefaultSoundConfiguration();
+        soundConfiguration.init(this, soundPool);
 
         leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
         rightConfigButton = (Button) findViewById(R.id.rightConfigButton);
@@ -333,23 +330,28 @@ public class JamminActivity extends Activity implements SensorEventListener {
     }
 
     private PlayingSound mapSound(Direction direction, float amplitude) {
-        SoundsConfiguration.ConfigurationButtonId buttonId;
+        SoundGesture.ConfigurationButtonId buttonId;
         if(leftConfigButton.isPressed()){
-            buttonId = SoundsConfiguration.ConfigurationButtonId.LEFT;
+            buttonId = SoundGesture.ConfigurationButtonId.LEFT;
         }
         else if(rightConfigButton.isPressed()){
-            buttonId = SoundsConfiguration.ConfigurationButtonId.RIGHT;
+            buttonId = SoundGesture.ConfigurationButtonId.RIGHT;
         }
         else{
             return null;
         }
-        return new PlayingSound(soundConfiguration.getSoundId(direction, buttonId), amplitude);
+        String soundId = soundConfiguration.getSoundId(direction, buttonId);
+        if(soundId == null){
+            return null;
+        }
+        return new PlayingSound(soundId, amplitude);
     }
 
     private void playSound(PlayingSound[] playingSound, Long currentTime) {
         for (PlayingSound sound : playingSound) {
             Log.i("Playing", sound.toString());
-            soundPool.play(soundConfiguration.getSoundPoolId(sound.getSoundId()), 1, 1, 1, 0, 1);
+            Integer soundPoolId = soundConfiguration.getSoundPoolId(sound.getSoundId());
+            soundPool.play(soundPoolId, 1, 1, 1, 0, 1);
         }
 
         if (currentTime != null)

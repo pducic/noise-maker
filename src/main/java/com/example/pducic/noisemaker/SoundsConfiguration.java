@@ -3,88 +3,60 @@ package com.example.pducic.noisemaker;
 import android.content.Context;
 import android.media.SoundPool;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by pducic on 08.10.14
  */
-public class SoundsConfiguration {
+public class SoundsConfiguration implements Serializable{
 
-    private Map<SoundConfiguration, String> soundDirections = new HashMap<SoundConfiguration, String>();
-    private Map<String, Sound> sounds = new HashMap<String, Sound>();
-    private Map<String, Integer> soundPoolIds = new HashMap<String, Integer>();
+    private static final long serialVersionUID = -1954680715157594242L;
+    private Map<SoundGesture, String> soundDirections;
+    private Map<String, Integer> soundPoolIds;
+    private Map<String, SoundPreview> soundPreviews;
+    private Collection<Sound> sounds;
 
-
-    public SoundsConfiguration(Context context, SoundPool soundPool) {
-        //predefined in app / storage
-        sounds.put("g_G", new Sound("guitar G", R.raw.stand_by_me_a_major, new SoundPreview(android.R.color.holo_red_dark)));
-        sounds.put("g_a", new Sound("guitar a", R.raw.stand_by_me_cis_minor, new SoundPreview(android.R.color.holo_blue_dark)));
-        sounds.put("g_C", new Sound("guitar C", R.raw.stand_by_me_e_major, new SoundPreview(android.R.color.holo_green_dark)));
-        sounds.put("g_F", new Sound("guitar F", R.raw.stand_by_me_h_major, new SoundPreview(android.R.color.black)));
-        sounds.put("d_hat", new Sound("drum hat", R.raw.drum_hat_open, new SoundPreview(android.R.color.holo_orange_dark)));
-        sounds.put("d_kick", new Sound("drum kick", R.raw.drum_prac_kick, new SoundPreview(android.R.color.holo_purple)));
-        sounds.put("d_snare", new Sound("drum snare", R.raw.drum_prac_snare, new SoundPreview(android.R.color.darker_gray)));
-        sounds.put("d_snare_rim", new Sound("drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright)));
-
-        for (String s : sounds.keySet()) {
-            Sound sound = sounds.get(s);
-            soundPoolIds.put(s, soundPool.load(context, sound.getResourceId(), 1));
+    public SoundsConfiguration(Collection<Sound> soundsCollection, boolean previewDirections) {
+        soundDirections = new HashMap<SoundGesture, String>();
+        soundPreviews = new HashMap<String, SoundPreview>();
+        sounds = soundsCollection;
+        for (Sound sound : soundsCollection) {
+            soundDirections.put(sound.getSoundGesture(), sound.getKey());
+            if (previewDirections) {
+                //TODO add logic for previewDirections: if set true load icon by direction + color by config key; default otherwise
+                soundPreviews.put(sound.getKey(), sound.getDefaultSoundPreview());
+            } else {
+                soundPreviews.put(sound.getKey(), sound.getDefaultSoundPreview());
+            }
         }
-
-        //configurable
-        soundDirections.put(new SoundConfiguration(Direction.UP, ConfigurationButtonId.LEFT), "g_G");
-        soundDirections.put(new SoundConfiguration(Direction.DOWN, ConfigurationButtonId.LEFT), "g_F");
-        soundDirections.put(new SoundConfiguration(Direction.LEFT, ConfigurationButtonId.LEFT), "g_C");
-        soundDirections.put(new SoundConfiguration(Direction.RIGHT, ConfigurationButtonId.LEFT), "g_a");
-        soundDirections.put(new SoundConfiguration(Direction.UP, ConfigurationButtonId.RIGHT), "d_hat");
-        soundDirections.put(new SoundConfiguration(Direction.DOWN, ConfigurationButtonId.RIGHT), "d_snare");
-        soundDirections.put(new SoundConfiguration(Direction.LEFT, ConfigurationButtonId.RIGHT), "d_kick");
-        soundDirections.put(new SoundConfiguration(Direction.RIGHT, ConfigurationButtonId.RIGHT), "d_snare_rim");
     }
 
-    public int getSoundPoolId(String soundId){
-        return soundPoolIds.get(soundId);
-    }
-
-    public String getSoundId(Direction direction, ConfigurationButtonId buttonId){
-        return soundDirections.get(new SoundConfiguration(direction, buttonId));
-    }
-
-    public Sound getSound(String soundId){
-        return sounds.get(soundId);
-    }
-
-    public enum ConfigurationButtonId {
-        LEFT,
-        RIGHT
-    }
-
-    class SoundConfiguration{
-        Direction direction;
-        ConfigurationButtonId configurationButtonId;
-
-        SoundConfiguration(Direction direction, ConfigurationButtonId configurationButtonId) {
-            this.direction = direction;
-            this.configurationButtonId = configurationButtonId;
+    public void init(Context context, SoundPool soundPool){
+        soundPoolIds = new HashMap<String, Integer>();
+        for (Sound sound : sounds) {
+            soundPoolIds.put(sound.getKey(), soundPool.load(context, sound.getResourceId(), 1));
         }
+    }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            SoundConfiguration that = (SoundConfiguration) o;
-
-            return configurationButtonId == that.configurationButtonId && direction == that.direction;
-
+    public Integer getSoundPoolId(String soundId) {
+        if(soundPoolIds == null){
+            throw new IllegalStateException("Init method should be called before first use");
         }
-
-        @Override
-        public int hashCode() {
-            int result = direction.hashCode();
-            result = 31 * result + configurationButtonId.hashCode();
-            return result;
+        Integer result = soundPoolIds.get(soundId);
+        if(result == null){
+            throw new IllegalStateException("SoundPool failed to instantiate correctly");
         }
+        return result;
+    }
+
+    public String getSoundId(Direction direction, SoundGesture.ConfigurationButtonId buttonId) {
+        return soundDirections.get(new SoundGesture(direction, buttonId));
+    }
+
+    public SoundPreview getSoundPreview(String soundId) {
+        return soundPreviews.get(soundId);
     }
 }

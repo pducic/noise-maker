@@ -32,7 +32,7 @@ public class RecordingsListAdapter extends ArrayAdapter<Recording> {
 
         RecordingView recordingView = (RecordingView) rowView.findViewById(R.id.recordingViewItem);
         Recording recording = song.getRecordings().get(position);
-        recordingView.setContent(recording.getName(), songLength, recording.getPlayingSounds(), soundConfiguration);
+        recordingView.setContent(songLength, recording.getPlayingSounds(), soundConfiguration);
         TextView textView = (TextView) rowView.findViewById(R.id.textViewItem);
         textView.setText(recording.getName());
 

@@ -1,11 +1,14 @@
 package com.example.pducic.noisemaker;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by pducic on 02.10.14
  */
-public class Recording {
+public class Recording implements Serializable{
+    private static final long serialVersionUID = -1775803374902747440L;
+
     private String name;
     private List<PlayingSound> playingSounds;
 

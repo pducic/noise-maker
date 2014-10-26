@@ -1,10 +1,12 @@
 package com.example.pducic.noisemaker;
 
+import java.io.Serializable;
+
 /**
  * Created by pducic on 01.10.14.
  *
  */
-public class PlayingSound {
+public class PlayingSound implements Serializable{
     public PlayingSound(String soundId, float amplitude, long time) {
         this.time = time;
         this.soundId = soundId;

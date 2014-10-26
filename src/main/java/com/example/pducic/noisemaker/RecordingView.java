@@ -20,7 +20,6 @@ import java.util.List;
 public class RecordingView extends TextView {
     public static final int SOUND_SHAPE_RADIUS = 20;
     private Drawable mDrawable;
-    private String name;
     private long songLength;
     private List<PlayingSound> playingSounds;
     private SoundsConfiguration soundsConfiguration;
@@ -38,7 +37,7 @@ public class RecordingView extends TextView {
         for (int i = 0; i < playingSounds.size(); i++) {
             ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
 
-            soundDrawable.getPaint().setColor(getResources().getColor(soundsConfiguration.getSound(playingSounds.get(i).getSoundId()).getSoundPreview().getColor()));
+            soundDrawable.getPaint().setColor(getResources().getColor(soundsConfiguration.getSoundPreview(playingSounds.get(i).getSoundId()).getColor()));
             int x = (int)(1.0 * getWidth() * playingSounds.get(i).getTime() / songLength);
             int y = 0;
             soundDrawable.setBounds(x - SOUND_SHAPE_RADIUS, y, x, y + SOUND_SHAPE_RADIUS);
@@ -54,9 +53,8 @@ public class RecordingView extends TextView {
         return false;
     }
 
-    public void setContent(String name, long songLength, List<PlayingSound> playingSounds, SoundsConfiguration soundsConfiguration) {
+    public void setContent(long songLength, List<PlayingSound> playingSounds, SoundsConfiguration soundsConfiguration) {
         this.songLength = songLength;
-        this.name = name;
         this.playingSounds = playingSounds;
         this.soundsConfiguration = soundsConfiguration;
     }

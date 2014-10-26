@@ -10,12 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class LevelsConfigurationActivity extends Activity {
-
-    //TODO move this into configuration...
-    public static final String[] LEVELS = new String[]{"Level 1"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,14 +20,17 @@ public class LevelsConfigurationActivity extends Activity {
         setContentView(R.layout.activity_levels_configuration);
 
         ListView levelsListView = (ListView) findViewById(R.id.levelsListView);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_view_level_item, R.id.textViewLevelItem, Arrays.asList(LEVELS));
+        final List<Level> levels = MainConfiguration.getLevels();
+        ArrayAdapter<Level> adapter = new ArrayAdapter<Level>(this, R.layout.list_view_level_item, R.id.textViewLevelItem, levels);
         levelsListView.setAdapter(adapter);
 
         levelsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 //TODO pass information on level...
+
                 Intent intent = new Intent(LevelsConfigurationActivity.this, LevelActivity.class);
+                intent.putExtra(IntentConstants.LEVEL_CONFIGURATION, levels.get(position));
                 startActivity(intent);
             }
         });
