@@ -14,12 +14,20 @@ public class SoundGesture implements Serializable{
         RIGHT
     }
 
-    Direction direction;
-    ConfigurationButtonId configurationButtonId;
+    private Direction direction;
+    private ConfigurationButtonId configurationButtonId;
 
     public SoundGesture(Direction direction, ConfigurationButtonId configurationButtonId) {
         this.direction = direction;
         this.configurationButtonId = configurationButtonId;
+    }
+
+    public ConfigurationButtonId getConfigurationButtonId() {
+        return configurationButtonId;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     @Override

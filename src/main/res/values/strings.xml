@@ -13,8 +13,8 @@
     <string name="play">Play</string>
     <string name="recording">Recording_</string>
     <string name="normalizeSong">Fix</string>
-    <string name="leftConfigButton">L</string>
-    <string name="rightConfigButton">R</string>
+    <string name="leftConfigButton"></string>
+    <string name="rightConfigButton"></string>
     <string name="title_activity_main_menu">MainMenuActivity</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_levels">LevelsActivity</string>

@@ -23,4 +23,8 @@ public class SoundPreview implements Serializable{
     public int getColor() {
         return color;
     }
+
+    public Integer getIconResourceId() {
+        return iconResourceId;
+    }
 }

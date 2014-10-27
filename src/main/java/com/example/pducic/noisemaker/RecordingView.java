@@ -1,7 +1,10 @@
 package com.example.pducic.noisemaker;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -10,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,7 +22,7 @@ import java.util.List;
  * TODO proučiti zašto se onDraw poziva samo za textView. ne radi dispatchDraw niti etWillNotDrawEnabled(false)
  */
 public class RecordingView extends TextView {
-    public static final int SOUND_SHAPE_RADIUS = 20;
+    public static final int SOUND_SHAPE_RADIUS = 50;
     private Drawable mDrawable;
     private long songLength;
     private List<PlayingSound> playingSounds;
@@ -34,18 +38,26 @@ public class RecordingView extends TextView {
             if (soundsConfiguration == null || playingSounds == null) {
                 return;
             }
-            Drawable[] drawables = new Drawable[playingSounds.size()];
+            LinkedList<Drawable> drawables = new LinkedList<Drawable>();
             for (int i = 0; i < playingSounds.size(); i++) {
                 ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
 
-                soundDrawable.getPaint().setColor(getResources().getColor(soundsConfiguration.getSoundPreview(playingSounds.get(i).getSoundId()).getColor()));
+                SoundPreview soundPreview = soundsConfiguration.getSoundPreview(playingSounds.get(i).getSoundId());
+                soundDrawable.getPaint().setColor(getResources().getColor(soundPreview.getColor()));
                 int x = (int) (1.0 * getWidth() * playingSounds.get(i).getTime() / songLength);
                 int y = 0;
-                soundDrawable.setBounds(x - SOUND_SHAPE_RADIUS, y, x, y + SOUND_SHAPE_RADIUS);
+                Rect rectum = new Rect(x - SOUND_SHAPE_RADIUS, y, x, y + SOUND_SHAPE_RADIUS);
+                soundDrawable.setBounds(rectum);
                 Log.d("Sound", "x:" + x + ",y:" + y);
-                drawables[i] = soundDrawable;
+                drawables.add(soundDrawable);
+
+                if(soundPreview.getIconResourceId()!= null) {
+                    Drawable drawable = getResources().getDrawable(soundPreview.getIconResourceId());
+                    drawable.setBounds(rectum);
+                    drawables.add(drawable);
+                }
             }
-            mDrawable = new LayerDrawable(drawables);
+            mDrawable = new LayerDrawable(drawables.toArray(new Drawable[drawables.size()]));
             mDrawable.draw(canvas);
         }
     }

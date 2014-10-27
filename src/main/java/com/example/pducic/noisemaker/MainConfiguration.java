@@ -42,7 +42,25 @@ public class MainConfiguration {
             add(new Level("Level 1", new Recording("Level 1", new ArrayList<PlayingSound>() {{
                 add(new PlayingSound("drum_prac_snare_rim", 0f, 2000));
                 add(new PlayingSound("drum_prac_kick", 0f, 3000));
-            }}), getDefaultSoundConfiguration(), 300, Collections.<String>emptyList()));
+            }}), new SoundsConfiguration(new ArrayList<Sound>() {{
+                add(new Sound("drum_hat_open", "drum hat", R.raw.drum_hat_open, new SoundPreview(android.R.color.holo_orange_dark), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.RIGHT)));
+                add(new Sound("drum_prac_kick", "drum kick", R.raw.drum_prac_kick, new SoundPreview(android.R.color.holo_purple), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.RIGHT)));
+                add(new Sound("drum_prac_snare", "drum snare", R.raw.drum_prac_snare, new SoundPreview(android.R.color.darker_gray), new SoundGesture(Direction.DOWN, SoundGesture.ConfigurationButtonId.RIGHT)));
+                add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.RIGHT, SoundGesture.ConfigurationButtonId.RIGHT)));
+            }}, true), 150, Collections.<String>emptyList()));
+
+            add(new Level("Level 2", new Recording("Level 2", new ArrayList<PlayingSound>() {{
+                add(new PlayingSound("drum_prac_kick", 0f, 1000));
+                add(new PlayingSound("drum_prac_snare_rim", 0f, 2000));
+                add(new PlayingSound("drum_prac_snare_rim", 0f, 1500));
+                add(new PlayingSound("drum_prac_kick", 0f, 3000));
+                add(new PlayingSound("drum_hat_open", 0f, 4000));
+            }}), new SoundsConfiguration(new ArrayList<Sound>() {{
+                add(new Sound("drum_hat_open", "drum hat", R.raw.drum_hat_open, new SoundPreview(android.R.color.holo_orange_dark), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.RIGHT)));
+                add(new Sound("drum_prac_kick", "drum kick", R.raw.drum_prac_kick, new SoundPreview(android.R.color.holo_purple), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.RIGHT)));
+                add(new Sound("drum_prac_snare", "drum snare", R.raw.drum_prac_snare, new SoundPreview(android.R.color.darker_gray), new SoundGesture(Direction.DOWN, SoundGesture.ConfigurationButtonId.LEFT)));
+                add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.RIGHT, SoundGesture.ConfigurationButtonId.LEFT)));
+            }}, true), 150, Collections.<String>emptyList()));
         }};
     }
 

@@ -145,8 +145,9 @@ public class LevelActivity extends Activity implements SensorEventListener {
         Log.i("Validation", "Success!");
 
         Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, LevelsConfigurationActivity.class);
-        startActivity(intent);
+        finish();
+//        Intent intent = new Intent(this, LevelsConfigurationActivity.class);
+//        startActivity(intent);
 
     }
 

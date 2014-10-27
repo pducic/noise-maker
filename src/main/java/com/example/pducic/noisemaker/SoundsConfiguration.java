@@ -26,12 +26,33 @@ public class SoundsConfiguration implements Serializable{
         for (Sound sound : soundsCollection) {
             soundDirections.put(sound.getSoundGesture(), sound.getKey());
             if (previewDirections) {
-                //TODO add logic for previewDirections: if set true load icon by direction + color by config key; default otherwise
-                soundPreviews.put(sound.getKey(), sound.getDefaultSoundPreview());
+                soundPreviews.put(sound.getKey(), getSoundPreview(sound.getSoundGesture()));
             } else {
                 soundPreviews.put(sound.getKey(), sound.getDefaultSoundPreview());
             }
         }
+    }
+
+    private SoundPreview getSoundPreview(SoundGesture soundGesture){
+        return new SoundPreview(getColor(soundGesture.getConfigurationButtonId()), getIconId(soundGesture.getDirection()));
+    }
+
+    private Integer getIconId(Direction direction) {
+        switch (direction){
+            case RIGHT: return R.drawable.icon_right;
+            case LEFT: return R.drawable.icon_left;
+            case UP: return R.drawable.icon_down;
+            case DOWN: return R.drawable.icon_up;
+        }
+        return null;
+    }
+
+    private int getColor(SoundGesture.ConfigurationButtonId soundConfigurationButtonId){
+        switch (soundConfigurationButtonId){
+            case LEFT: return R.color.left_button;
+            case RIGHT: return R.color.right_button;
+        }
+        return android.R.color.black;
     }
 
     public void init(Context context, SoundPool soundPool){
