@@ -28,6 +28,7 @@ import java.util.PriorityQueue;
 
 /**
  * TODO refactor to fragments!!!!
+ * TODO pass goal SONG, not recording
  */
 public class LevelActivity extends Activity implements SensorEventListener {
 
@@ -146,8 +147,6 @@ public class LevelActivity extends Activity implements SensorEventListener {
 
         Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
         finish();
-//        Intent intent = new Intent(this, LevelsConfigurationActivity.class);
-//        startActivity(intent);
 
     }
 
