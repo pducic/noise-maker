@@ -28,22 +28,19 @@ import java.util.PriorityQueue;
 
 /**
  * TODO refactor to fragments!!!!
- * TODO pass goal SONG, not recording
  */
 public class LevelActivity extends Activity implements SensorEventListener {
 
     private SoundPool soundPool;
     private SoundsConfiguration soundsConfiguration;
     private int mistakeMillis;
-    private Recording goalRecording;
+    private Song goalSong;
 
     private static final int sensorType = Sensor.TYPE_GYROSCOPE;
     private int pauseThreshold = MainConfiguration.IGNORE_EVENTS_AFTER_SOUND;
     private float sensorThreshold = MainConfiguration.POSITIVE_COUNTER_THRESHOLD;
     private long lastShake = 0;
     private boolean isRecording = false;
-    private boolean isPlaying = false;
-    private ImageButton playButton;
     private ImageButton recordButton;
     private long startRecording;
     private List<PlayingSound> currentRecording = new LinkedList<PlayingSound>();
@@ -54,6 +51,7 @@ public class LevelActivity extends Activity implements SensorEventListener {
     private SeekBar playingSeekbar;
     private Button leftConfigButton;
     private Button rightConfigButton;
+    private RecordingsListAdapter goalRecordingsListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,22 +62,20 @@ public class LevelActivity extends Activity implements SensorEventListener {
         soundPool = new SoundPool(MainConfiguration.MAX_STREAMS, AudioManager.STREAM_MUSIC, MainConfiguration.SRC_QUALITY);
         soundsConfiguration = level.getSoundsConfiguration();
         soundsConfiguration.init(this, soundPool);
-        goalRecording = level.getGoal();
+        goalSong = level.getGoal();
         mistakeMillis = level.getMistakeMillis();
 
         setContentView(R.layout.activity_level);
-        RecordingView goalRecordingView = (RecordingView) findViewById(R.id.levelGoalRecordingView);
-
-
-        goalRecordingView.setContent(goalRecording.getRecordingLength(), goalRecording.getPlayingSounds(), soundsConfiguration);
+        RecordingsListView goalRecordingView = (RecordingsListView) findViewById(R.id.levelGoalRecordingView);
+        goalRecordingsListAdapter = new RecordingsListAdapter(this, goalSong, soundsConfiguration, goalSong.getDuration());
+        goalRecordingView.setAdapter(goalRecordingsListAdapter);
 
         leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
         rightConfigButton = (Button) findViewById(R.id.rightConfigButton);
 
-        playButton = (ImageButton) findViewById(R.id.levelPlayButton);
         recordButton = (ImageButton) findViewById(R.id.levelRecordButton);
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration, goalRecording.getRecordingLength());
+        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration, goalSong.getDuration());
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.levelRecordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -130,7 +126,10 @@ public class LevelActivity extends Activity implements SensorEventListener {
         for (Recording recording : song.getRecordings()) {
             recordingPlayingSounds.addAll(recording.getPlayingSounds());
         }
-        List<PlayingSound> goalPlayingSounds = goalRecording.getPlayingSounds();
+        List<PlayingSound> goalPlayingSounds = new LinkedList<PlayingSound>();
+        for (Recording recording : goalSong.getRecordings()) {
+            goalPlayingSounds.addAll(recording.getPlayingSounds());
+        }
         if(recordingPlayingSounds.size() != goalPlayingSounds.size()){
             return;
         }
@@ -186,15 +185,6 @@ public class LevelActivity extends Activity implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-    public void onPlayClick(View view){
-        if(isPlaying){
-            stopPlaying();
-        }
-        else{
-            startPlaying();
-        }
-    }
-
     public void onRecordClick(View view){
         if(isRecording){
             stopRecording();
@@ -204,18 +194,8 @@ public class LevelActivity extends Activity implements SensorEventListener {
         }
     }
 
-    private void startPlaying() {
-        Log.i("Play", "Starting...");
-        isPlaying = true;
-        playButton.setImageResource(R.drawable.ic_action_stop);
-        playTask.setSongDuration(goalRecording.getRecordingLength());
-        playTask.start();
-    }
-
     private void stopPlaying() {
         Log.i("Play", "Stopping...");
-        isPlaying = false;
-        playButton.setImageResource(R.drawable.ic_action_play);
         playTask.stop();
     }
 
@@ -224,15 +204,13 @@ public class LevelActivity extends Activity implements SensorEventListener {
         isRecording = true;
         startRecording = System.currentTimeMillis();
         recordButton.setBackgroundResource(android.R.color.holo_red_dark);
-        playButton.setEnabled(false);
-        playTask.setSongDuration(goalRecording.getRecordingLength());
+        playTask.setSongDuration(goalSong.getDuration());
         playTask.start();
     }
 
     protected void stopRecording() {
         isRecording = false;
         recordButton.setBackgroundResource(android.R.color.darker_gray);
-        playButton.setEnabled(true);
         recordingsListAdapter.add(new Recording(getString(R.string.recording) + getNextEntryIndex(song.getRecordings()), new ArrayList<PlayingSound>(currentRecording)));
         playTask.stop();
         validate();

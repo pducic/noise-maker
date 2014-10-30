@@ -11,12 +11,12 @@ public class Level implements Serializable{
     private static final long serialVersionUID = 1004264492292352655L;
 
     private String name;
-    private Recording goal;
+    private Song goal;
     private SoundsConfiguration soundsConfiguration;
     private int mistakeMillis;
     private Collection<String> rewardSounds;
 
-    public Level(String name, Recording goal, SoundsConfiguration soundsConfiguration, int mistakeMillis, Collection<String> rewardSounds) {
+    public Level(String name, Song goal, SoundsConfiguration soundsConfiguration, int mistakeMillis, Collection<String> rewardSounds) {
         this.name = name;
         this.goal = goal;
         this.soundsConfiguration = soundsConfiguration;
@@ -28,7 +28,7 @@ public class Level implements Serializable{
         return name;
     }
 
-    public Recording getGoal() {
+    public Song getGoal() {
         return goal;
     }
 

@@ -25,7 +25,7 @@ public class Recording implements Serializable{
         return playingSounds;
     }
 
-    public long getRecordingLength(){
+    public long getDuration(){
         List<PlayingSound> playingSounds = getPlayingSounds();
         if(playingSounds.isEmpty()){
             return 0;
