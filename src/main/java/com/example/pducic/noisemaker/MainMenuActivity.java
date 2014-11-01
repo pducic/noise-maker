@@ -22,4 +22,9 @@ public class MainMenuActivity extends Activity {
         Intent intent = new Intent(this, LevelsConfigurationActivity.class);
         startActivity(intent);
     }
+
+    public void startLyricsMode(View view){
+        Intent intent = new Intent(this, LyricsActivity.class);
+        startActivity(intent);
+    }
 }

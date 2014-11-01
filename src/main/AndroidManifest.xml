@@ -34,10 +34,18 @@
         <activity
             android:name=".LevelActivity"
             android:label="@string/title_activity_level"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.pducic.noisemaker.LevelsConfigurationActivity" />
+        </activity>
+        <activity
+            android:name=".LyricsActivity"
+            android:label="@string/title_activity_lyrics"
+            android:parentActivityName=".MainMenuActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pducic.noisemaker.MainMenuActivity" />
         </activity>
     </application>
 

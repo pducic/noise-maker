@@ -23,6 +23,8 @@
     <string name="jammin_mode">Jammin Mode</string>
     <string name="goal">Goal</string>
     <string name="recording_result">Result</string>
-
+    <string name="title_activity_lyrics">LyricsActivity</string>
+    <string name="lorem_ipsum_200">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam vel semper sem, in aliquam tellus. Sed iaculis sapien nec orci ultricies, vel luctus tortor dictum. Proin ut nibh pellentesque, eleifend ipsum vel, elementum lectus. Quisque turpis enim, pharetra interdum molestie eu, pharetra id sem. Nulla fermentum convallis quam, at maximus est commodo sit amet. Phasellus imperdiet pretium orci ut eleifend. Phasellus scelerisque justo id orci mattis accumsan. Nam non tellus molestie diam accumsan euismod quis nec dolor. Sed sapien nunc, vestibulum sed augue a, viverra sollicitudin ante. Praesent dictum maximus ultrices. Proin tempus metus quis ante auctor, in molestie ligula semper. Praesent quis ante purus. Mauris rhoncus ante at sem pharetra, ut tincidunt ex tempus. Sed non odio venenatis ligula ultrices suscipit. Phasellus elementum, quam nec tincidunt malesuada, nibh est varius arcu, nec blandit enim sem nec leo. Proin nec posuere urna, ac accumsan leo. Quisque vehicula facilisis ligula. Ut aliquam sapien vitae lacus porta placerat. Suspendisse potenti. Nulla iaculis consectetur lectus. Etiam quis egestas purus. Donec tincidunt iaculis neque. Sed at posuere elit. Donec pulvinar semper facilisis. Nullam volutpat pharetra felis. Etiam varius ultrices turpis, a laoreet quam rhoncus vel. Vivamus tincidunt sem a leo vestibulum sollicitudin. Curabitur sed.</string>
+    <string name="lyrics_mode">Lyrics Mode</string>
 
 </resources>
