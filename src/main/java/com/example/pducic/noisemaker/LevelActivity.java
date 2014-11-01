@@ -67,7 +67,7 @@ public class LevelActivity extends Activity implements SensorEventListener {
 
         setContentView(R.layout.activity_level);
         RecordingsListView goalRecordingView = (RecordingsListView) findViewById(R.id.levelGoalRecordingView);
-        goalRecordingsListAdapter = new RecordingsListAdapter(this, goalSong, soundsConfiguration, goalSong.getDuration());
+        goalRecordingsListAdapter = new RecordingsListAdapter(this, goalSong, null, soundsConfiguration, goalSong.getDuration(), 0);
         goalRecordingView.setAdapter(goalRecordingsListAdapter);
 
         leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
@@ -75,7 +75,7 @@ public class LevelActivity extends Activity implements SensorEventListener {
 
         recordButton = (ImageButton) findViewById(R.id.levelRecordButton);
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration, goalSong.getDuration());
+        recordingsListAdapter = new RecordingsListAdapter(this, song, goalSong, soundsConfiguration, goalSong.getDuration(), level.getMistakeMillis());
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.levelRecordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

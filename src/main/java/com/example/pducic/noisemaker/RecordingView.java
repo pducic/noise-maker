@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pducic on 07.10.14.
@@ -27,6 +28,7 @@ public class RecordingView extends TextView {
     private long songLength;
     private List<PlayingSound> playingSounds;
     private SoundsConfiguration soundsConfiguration;
+    private Set<String> correctlyPlayed;
 
     public RecordingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,7 +45,12 @@ public class RecordingView extends TextView {
                 ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
 
                 SoundPreview soundPreview = soundsConfiguration.getSoundPreview(playingSounds.get(i).getSoundId());
-                soundDrawable.getPaint().setColor(getResources().getColor(soundPreview.getColor()));
+                if(correctlyPlayed!=null && correctlyPlayed.contains(playingSounds.get(i).getSoundId())){
+                    soundDrawable.getPaint().setColor(getResources().getColor(android.R.color.holo_green_light));
+                }
+                else {
+                    soundDrawable.getPaint().setColor(getResources().getColor(soundPreview.getColor()));
+                }
                 int x = (int) (1.0 * getWidth() * playingSounds.get(i).getTime() / songLength);
                 int y = 0;
                 Rect rectum = new Rect(x - SOUND_SHAPE_RADIUS, y, x, y + SOUND_SHAPE_RADIUS);
@@ -62,9 +69,10 @@ public class RecordingView extends TextView {
         }
     }
 
-    public void setContent(long songLength, List<PlayingSound> playingSounds, SoundsConfiguration soundsConfiguration) {
+    public void setContent(long songLength, List<PlayingSound> playingSounds, Set<String> correctlyPlayed, SoundsConfiguration soundsConfiguration) {
         this.songLength = songLength;
         this.playingSounds = playingSounds;
         this.soundsConfiguration = soundsConfiguration;
+        this.correctlyPlayed = correctlyPlayed;
     }
 }

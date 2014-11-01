@@ -77,7 +77,7 @@ public class JamminActivity extends Activity implements SensorEventListener {
         tempoSlider.setProgress(tempoToSlider(MainConfiguration.DEFAULT_TEMPO));
         tempoTask = new TempoTask();
         playTask = new PlayTask();
-        recordingsListAdapter = new RecordingsListAdapter(this, song, soundsConfiguration, 0);
+        recordingsListAdapter = new RecordingsListAdapter(this, song, null, soundsConfiguration, 0, 0);
         RecordingsListView recordingsListView = (RecordingsListView) findViewById(R.id.recordingsList);
         recordingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
