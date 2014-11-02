@@ -63,8 +63,8 @@ public class LyricsView extends TextView {
 
         Paint paint = new Paint();
         float lyricsTextHeight = getResources().getDimension(R.dimen.lyricsTextSize);
-        final float scaledPx = lyricsTextHeight;
-        paint.setTextSize(scaledPx);
+        paint.setTextSize(lyricsTextHeight);
+        float lyricsCanvasHeight = lyricsTextHeight * 2;
 
         float maxTextPixelsWidthPerTakt = 0f;
 
@@ -87,11 +87,11 @@ public class LyricsView extends TextView {
         for (int i = 0; i < split.length; i++) {
             String s = split[i];
 
-            Bitmap textBitmap = Bitmap.createBitmap((int) maxTextPixelsWidthPerTakt, (int) lyricsTextHeight,
+            Bitmap textBitmap = Bitmap.createBitmap((int) maxTextPixelsWidthPerTakt, (int) lyricsCanvasHeight,
                     Bitmap.Config.ARGB_8888);
             Canvas textCanvas = new Canvas(textBitmap);
             BitmapDrawable textBitmapDrawable = new BitmapDrawable(getResources(), textBitmap);
-            textBitmapDrawable.setBounds((int) (i*maxTextPixelsWidthPerTakt), 0, (int) ((i+1)*maxTextPixelsWidthPerTakt), (int) lyricsTextHeight);
+            textBitmapDrawable.setBounds((int) (i*maxTextPixelsWidthPerTakt), 0, (int) ((i+1)*maxTextPixelsWidthPerTakt), (int) lyricsCanvasHeight);
             textCanvas.drawText(cleanupLyricString(s), 0, lyricsTextHeight, paint);
             drawables.add(textBitmapDrawable);
 
@@ -108,7 +108,7 @@ public class LyricsView extends TextView {
                 soundDrawable.getPaint().setColor(getResources().getColor(soundPreview.getColor()));
 
                 int x = (int) (i*maxTextPixelsWidthPerTakt + (maxTextPixelsWidthPerTakt*matchesCount/takt));
-                int y = (int) lyricsTextHeight;
+                int y = (int) lyricsCanvasHeight;
                 Rect rectum = new Rect(x, y, x + soundShapeRadiusPixels, y + soundShapeRadiusPixels);
                 soundDrawable.setBounds(rectum);
                 Log.d("Sound", "x:" + x + ",y:" + y);

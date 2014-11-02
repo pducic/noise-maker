@@ -12,6 +12,7 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="none"
         android:layout_above="@+id/lyricsPlayingPanel">
 
         <com.example.pducic.noisemaker.LyricsView
@@ -39,5 +40,14 @@
         android:onClick="onStart"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/lyricsPlayingPanel"
+        android:background="#ffff0000" />
 
 </RelativeLayout>
