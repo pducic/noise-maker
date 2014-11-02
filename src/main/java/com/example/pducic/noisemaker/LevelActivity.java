@@ -1,19 +1,13 @@
 package com.example.pducic.noisemaker;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -26,20 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-/**
- * TODO refactor to fragments!!!!
- */
-public class LevelActivity extends Activity implements SensorEventListener {
+public class LevelActivity extends AbstractJamminActivity {
 
-    private SoundPool soundPool;
-    private SoundsConfiguration soundsConfiguration;
     private int mistakeMillis;
     private Song goalSong;
 
-    private static final int sensorType = Sensor.TYPE_GYROSCOPE;
-    private int pauseThreshold = MainConfiguration.IGNORE_EVENTS_AFTER_SOUND;
-    private float sensorThreshold = MainConfiguration.POSITIVE_COUNTER_THRESHOLD;
-    private long lastShake = 0;
     private boolean isRecording = false;
     private ImageButton recordButton;
     private long startRecording;
@@ -49,14 +34,11 @@ public class LevelActivity extends Activity implements SensorEventListener {
     private PlayTask playTask;
     private RecordingsListAdapter recordingsListAdapter;
     private SeekBar playingSeekbar;
-    private Button leftConfigButton;
-    private Button rightConfigButton;
     private RecordingsListAdapter goalRecordingsListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Intent intent = getIntent();
         Level level = (Level) intent.getSerializableExtra(IntentConstants.LEVEL_CONFIGURATION);
         soundPool = new SoundPool(MainConfiguration.MAX_STREAMS, AudioManager.STREAM_MUSIC, MainConfiguration.SRC_QUALITY);
@@ -104,22 +86,6 @@ public class LevelActivity extends Activity implements SensorEventListener {
         playingSeekbar.setEnabled(false);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        final SensorManager sensorMgr = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
-        Sensor sensor = sensorMgr.getDefaultSensor(sensorType);
-        sensorMgr.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
-        Log.i("Delay", String.valueOf(sensor.getMinDelay()));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        final SensorManager sensorMgr = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
-        sensorMgr.unregisterListener(this);
-    }
-
     private void validate() {
         Log.i("Validation", "Start...");
         LinkedList<PlayingSound> recordingPlayingSounds = new LinkedList<PlayingSound>();
@@ -150,39 +116,14 @@ public class LevelActivity extends Activity implements SensorEventListener {
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == sensorType) {
-            Log.v("XYZ", Float.toString(event.values[0]) + "   " + Float.toString(event.values[2]) + "   ");
-
-            long curTime = System.currentTimeMillis();
-            if (lastShake != 0 && (curTime - lastShake) < pauseThreshold) return;
-
-            float x = event.values[0];
-            float z = event.values[2];
-
-            if(Math.abs(x) < sensorThreshold && Math.abs(z) < sensorThreshold){
-                return;
+    protected void onPlayingSound(PlayingSound playingSound) {
+        if (isRecording) {
+            if (currentRecording.size() > MainConfiguration.MAX_RECORDING_SIZE) {
+                stopRecording();
             }
-
-            PlayingSound playingSound = resolveSound(x, z);
-            if(playingSound == null){
-                return;
-            }
-
-            Log.d("PLAYING", Float.toString(x) + "   " + Float.toString(z) + "   ");
-            if (isRecording) {
-                if (currentRecording.size() > MainConfiguration.MAX_RECORDING_SIZE) {
-                    stopRecording();
-                }
-                playingSound.setTime(curTime - startRecording);
-                currentRecording.add(playingSound);
-            }
-            playSound(new PlayingSound[]{playingSound}, curTime);
+            playingSound.setTime(System.currentTimeMillis() - startRecording);
+            currentRecording.add(playingSound);
         }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
     public void onRecordClick(View view){
@@ -221,43 +162,6 @@ public class LevelActivity extends Activity implements SensorEventListener {
         String recordingString = getString(R.string.recording);
         String lastEntryName = recordings.get(recordings.size() - 1).getName();
         return Integer.valueOf(lastEntryName.substring(lastEntryName.indexOf(recordingString) + recordingString.length())) + 1;
-    }
-
-    private PlayingSound resolveSound(float x, float z){
-        if (Math.abs(x) > Math.abs(z)) {
-            return x > 0 ? mapSound(Direction.UP, x) : mapSound(Direction.DOWN, x);
-        } else {
-            return z > 0 ? mapSound(Direction.LEFT, z) : mapSound(Direction.RIGHT, z);
-        }
-    }
-
-    private PlayingSound mapSound(Direction direction, float amplitude) {
-        SoundGesture.ConfigurationButtonId buttonId;
-        if(leftConfigButton.isPressed()){
-            buttonId = SoundGesture.ConfigurationButtonId.LEFT;
-        }
-        else if(rightConfigButton.isPressed()){
-            buttonId = SoundGesture.ConfigurationButtonId.RIGHT;
-        }
-        else{
-            return null;
-        }
-        String soundId = soundsConfiguration.getSoundId(direction, buttonId);
-        if(soundId == null){
-            return null;
-        }
-        return new PlayingSound(soundId, amplitude);
-    }
-
-    private void playSound(PlayingSound[] playingSound, Long currentTime) {
-        for (PlayingSound sound : playingSound) {
-            Log.i("Playing", sound.toString());
-            Integer soundPoolId = soundsConfiguration.getSoundPoolId(sound.getSoundId());
-            soundPool.play(soundPoolId, 1, 1, 1, 0, 1);
-        }
-
-        if (currentTime != null)
-            lastShake = currentTime;
     }
 
     /**
