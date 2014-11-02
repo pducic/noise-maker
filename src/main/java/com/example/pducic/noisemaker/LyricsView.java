@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,8 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -24,6 +27,7 @@ import java.util.regex.Pattern;
  *
  */
 public class LyricsView extends TextView {
+
     private final int soundShapeRadiusPixels = (int) getResources().getDimension(R.dimen.lyricsTextSize);
     private final Pattern controlParamsPattern = Pattern.compile("\\{.*?\\}");
     private Drawable mDrawable;
@@ -31,7 +35,6 @@ public class LyricsView extends TextView {
     private int takt;
     private SoundsConfiguration soundsConfiguration;
     private int pixelsPerTakt;
-
 
     public LyricsView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -51,6 +54,13 @@ public class LyricsView extends TextView {
     }
 
     private void init(){
+
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x;
+
         Paint paint = new Paint();
         float lyricsTextHeight = getResources().getDimension(R.dimen.lyricsTextSize);
         final float scaledPx = lyricsTextHeight;
@@ -69,7 +79,7 @@ public class LyricsView extends TextView {
         }
         this.pixelsPerTakt = (int) (maxTextPixelsWidthPerTakt/takt);
         Log.d("Longest text", "" + maxTextPixelsWidthPerTakt);
-        int totalPixelsWidth = (int) (split.length * maxTextPixelsWidthPerTakt);
+        int totalPixelsWidth = (int) (split.length * maxTextPixelsWidthPerTakt) + screenWidth;
         setWidth(totalPixelsWidth);
 
         LinkedList<Drawable> drawables = new LinkedList<Drawable>();

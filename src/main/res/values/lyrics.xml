@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="lyrics_sretan_rodendan">{stand_by_me_e_major} Sretan ti {stand_by_me_cis_minor} rođendan | {stand_by_me_e_major}sretan {stand_by_me_cis_minor}rođendan | {stand_by_me_a_major} Sretan ti ro{stand_by_me_h_major}ođen | {stand_by_me_e_major}dan {stand_by_me_h_major}</string>
+    <string name="lyrics_sretan_rodendan">{stand_by_me_e_major} Sretan ti {stand_by_me_cis_minor} rođendan |
+        {stand_by_me_e_major}sretan {stand_by_me_cis_minor}rođendan | {stand_by_me_a_major} Sretan ti ro{stand_by_me_h_major}ođen |
+        {stand_by_me_e_major}dan {stand_by_me_h_major} | {stand_by_me_e_major} Sretan ti {stand_by_me_cis_minor} rođendan |
+        {stand_by_me_e_major}sretan {stand_by_me_cis_minor}rođendan | {stand_by_me_a_major} Sretan ti ro{stand_by_me_h_major}ođen |
+        {stand_by_me_e_major}dan</string>
     <integer name="lyrics_sretan_rodendan_takt">2</integer>
-    <integer name="lyrics_sretan_rodendan_bpm">40</integer>
+    <integer name="lyrics_sretan_rodendan_bpm">27</integer>
 </resources>
