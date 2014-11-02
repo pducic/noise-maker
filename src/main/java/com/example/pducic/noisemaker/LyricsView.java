@@ -70,7 +70,7 @@ public class LyricsView extends TextView {
 
         String[] split = content.split("\\|");
         for (String s : split) {
-            String cleanedText = LyricsHelper.cleanupLyricString(s);
+            String cleanedText = cleanupLyricString(s);
             float textWidth = paint.measureText(cleanedText);
             Log.d("Text len", s+": "+textWidth);
             if(textWidth > maxTextPixelsWidthPerTakt){
@@ -83,19 +83,20 @@ public class LyricsView extends TextView {
         setWidth(totalPixelsWidth);
 
         LinkedList<Drawable> drawables = new LinkedList<Drawable>();
-        Bitmap textBitmap = Bitmap.createBitmap(totalPixelsWidth, (int) lyricsTextHeight,
-                Bitmap.Config.ARGB_8888);
-        Canvas textCanvas = new Canvas(textBitmap);
-        BitmapDrawable textBitmapDrawable = new BitmapDrawable(getResources(), textBitmap);
-        textBitmapDrawable.setBounds(0,0,totalPixelsWidth, (int) lyricsTextHeight);
-        drawables.add(textBitmapDrawable);
 
         for (int i = 0; i < split.length; i++) {
             String s = split[i];
+
+            Bitmap textBitmap = Bitmap.createBitmap((int) maxTextPixelsWidthPerTakt, (int) lyricsTextHeight,
+                    Bitmap.Config.ARGB_8888);
+            Canvas textCanvas = new Canvas(textBitmap);
+            BitmapDrawable textBitmapDrawable = new BitmapDrawable(getResources(), textBitmap);
+            textBitmapDrawable.setBounds((int) (i*maxTextPixelsWidthPerTakt), 0, (int) ((i+1)*maxTextPixelsWidthPerTakt), (int) lyricsTextHeight);
+            textCanvas.drawText(cleanupLyricString(s), 0, lyricsTextHeight, paint);
+            drawables.add(textBitmapDrawable);
+
             Matcher matcher = controlParamsPattern.matcher(s);
             int matchesCount = 0;
-            textCanvas.drawText(LyricsHelper.cleanupLyricString(s), i * maxTextPixelsWidthPerTakt, lyricsTextHeight, paint);
-
             while(matcher.find()) {
                 ShapeDrawable soundDrawable = new ShapeDrawable(new OvalShape());
 
@@ -126,6 +127,10 @@ public class LyricsView extends TextView {
 
     public int getPixelsPerTakt(){
         return pixelsPerTakt;
+    }
+
+    private static String cleanupLyricString(String s) {
+        return s.replaceAll("\\{.*?\\}", "");
     }
 
 }
