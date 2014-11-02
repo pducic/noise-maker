@@ -1,25 +1,38 @@
 package com.example.pducic.noisemaker;
 
 import android.app.Activity;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 
-public class LyricsActivity extends Activity {
+public class LyricsActivity extends AbstractJamminActivity {
 
-    public static final int SCROLL_FACTOR = 1000000;
     private Task playTask;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lyrics);
+
         final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scrollView);
         final LyricsView contentView = (LyricsView) findViewById(R.id.contentView);
-        contentView.setContent(getResources().getString(R.string.lyrics_sretan_rodendan), getResources().getInteger(R.integer.lyrics_sretan_rodendan_takt), MainConfiguration.getDefaultSoundConfiguration(true));
+        leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
+        rightConfigButton = (Button) findViewById(R.id.rightConfigButton);
+
+        SoundsConfiguration defaultSoundConfiguration = MainConfiguration.getDefaultSoundConfiguration(true);
+        defaultSoundConfiguration.init(this, soundPool);
+        contentView.setContent(getResources().getString(R.string.lyrics_sretan_rodendan), getResources().getInteger(R.integer.lyrics_sretan_rodendan_takt), defaultSoundConfiguration);
         final int bpm = getResources().getInteger(R.integer.lyrics_sretan_rodendan_bpm);
         playTask = new Task() {
             private long startMillis =0;
@@ -42,12 +55,8 @@ public class LyricsActivity extends Activity {
         };
     }
 
-    /**
-     *
-     * @return
-     */
-    private static float getPercentFromCurrentTime() {
-        return 1f*(System.currentTimeMillis()% SCROLL_FACTOR)/SCROLL_FACTOR;
+    @Override
+    protected void onPlayingSound(PlayingSound playingSound) {
     }
 
     @Override
