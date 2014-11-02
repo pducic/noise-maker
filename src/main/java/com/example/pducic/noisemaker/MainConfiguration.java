@@ -24,18 +24,22 @@ public class MainConfiguration {
     public static final int SEEKBAR_GRANULARITY = 1;
 
     public static SoundsConfiguration getDefaultSoundConfiguration() {
+        return getDefaultSoundConfiguration(false);
+    }
+
+    public static SoundsConfiguration getDefaultSoundConfiguration(boolean showDirections) {
         LinkedList<Sound> sounds = new LinkedList<Sound>();
         //predefined in app / storage
         sounds.add(new Sound("stand_by_me_a_major", "guitar G", R.raw.stand_by_me_a_major, new SoundPreview(android.R.color.holo_red_dark), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.LEFT)));
         sounds.add(new Sound("stand_by_me_cis_minor", "guitar a", R.raw.stand_by_me_cis_minor, new SoundPreview(android.R.color.holo_blue_dark), new SoundGesture(Direction.RIGHT, SoundGesture.ConfigurationButtonId.LEFT)));
         sounds.add(new Sound("stand_by_me_e_major", "guitar C", R.raw.stand_by_me_e_major, new SoundPreview(android.R.color.holo_green_dark), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.LEFT)));
         sounds.add(new Sound("stand_by_me_h_major", "guitar F", R.raw.stand_by_me_h_major, new SoundPreview(android.R.color.black), new SoundGesture(Direction.DOWN, SoundGesture.ConfigurationButtonId.LEFT)));
-        sounds.add(new Sound("sr_1", "sr_1", R.raw.sretan_rodendan_pt1, new SoundPreview(android.R.color.holo_orange_dark), new SoundGesture(Direction.RIGHT, SoundGesture.ConfigurationButtonId.RIGHT)));
-        sounds.add(new Sound("sr_2", "sr_2", R.raw.sretan_rodendan_pt2, new SoundPreview(android.R.color.holo_purple), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.RIGHT)));
+        sounds.add(new Sound("drum_hat_open", "drum hat", R.raw.drum_hat_open, new SoundPreview(android.R.color.holo_orange_dark), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.RIGHT)));
+        sounds.add(new Sound("drum_prac_kick", "drum kick", R.raw.drum_prac_kick, new SoundPreview(android.R.color.holo_purple), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.RIGHT)));
         sounds.add(new Sound("drum_prac_snare", "drum snare", R.raw.drum_prac_snare, new SoundPreview(android.R.color.darker_gray), new SoundGesture(Direction.DOWN, SoundGesture.ConfigurationButtonId.RIGHT)));
         sounds.add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.RIGHT)));
 
-        return new SoundsConfiguration(sounds, false);
+        return new SoundsConfiguration(sounds, showDirections);
     }
 
     public static List<Level> getLevels() {

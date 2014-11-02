@@ -5,4 +5,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="minGoalRecordingHeight">80dp</dimen>
     <dimen name="playPanelMinHeight">100dp</dimen>
+    <dimen name="lyricsTextSize">30sp</dimen>
+    <dimen name="soundPreviewRadiusPixels">50px</dimen>
 </resources>

@@ -14,12 +14,11 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/playButton">
 
-        <TextView
-            android:text="@string/lorem_ipsum_200"
+        <com.example.pducic.noisemaker.LyricsView
             android:id="@+id/contentView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="72sp" />
+            android:textSize="@dimen/lyricsTextSize" />
     </HorizontalScrollView>
 
     <Button

@@ -23,7 +23,7 @@ import java.util.Set;
  * TODO proučiti zašto se onDraw poziva samo za textView. ne radi dispatchDraw niti etWillNotDrawEnabled(false)
  */
 public class RecordingView extends TextView {
-    public static final int SOUND_SHAPE_RADIUS = 50;
+    private final int SOUND_SHAPE_RADIUS = (int) getResources().getDimension(R.dimen.lyricsTextSize);
     private Drawable mDrawable;
     private long songLength;
     private List<PlayingSound> playingSounds;

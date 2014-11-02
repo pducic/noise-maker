@@ -6,9 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.HorizontalScrollView;
-import android.widget.TextView;
-
-import com.example.pducic.noisemaker.R;
 
 public class LyricsActivity extends Activity {
 
@@ -21,8 +18,16 @@ public class LyricsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lyrics);
         final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scrollView);
-        final TextView contentView = (TextView) findViewById(R.id.contentView);
+        final LyricsView contentView = (LyricsView) findViewById(R.id.contentView);
+        contentView.setContent(getResources().getString(R.string.lyrics_sretan_rodendan), getResources().getInteger(R.integer.lyrics_sretan_rodendan_takt), MainConfiguration.getDefaultSoundConfiguration(true));
         playTask = new Task() {
+            private long startMillis =0;
+
+            @Override
+            void start() {
+                super.start();
+                startMillis = System.currentTimeMillis();
+            }
 
             @Override
             protected void process() {
