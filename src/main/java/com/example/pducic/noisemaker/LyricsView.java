@@ -30,6 +30,7 @@ public class LyricsView extends TextView {
     private String content;
     private int takt;
     private SoundsConfiguration soundsConfiguration;
+    private int pixelsPerTakt;
 
 
     public LyricsView(Context context, AttributeSet attrs) {
@@ -66,6 +67,7 @@ public class LyricsView extends TextView {
                 maxTextPixelsWidthPerTakt = textWidth;
             }
         }
+        this.pixelsPerTakt = (int) (maxTextPixelsWidthPerTakt/takt);
         Log.d("Longest text", "" + maxTextPixelsWidthPerTakt);
         int totalPixelsWidth = (int) (split.length * maxTextPixelsWidthPerTakt);
         setWidth(totalPixelsWidth);
@@ -110,6 +112,10 @@ public class LyricsView extends TextView {
             }
         }
         mDrawable = new LayerDrawable(drawables.toArray(new Drawable[drawables.size()]));
+    }
+
+    public int getPixelsPerTakt(){
+        return pixelsPerTakt;
     }
 
 }

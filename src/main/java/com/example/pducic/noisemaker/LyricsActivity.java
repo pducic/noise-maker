@@ -20,6 +20,7 @@ public class LyricsActivity extends Activity {
         final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scrollView);
         final LyricsView contentView = (LyricsView) findViewById(R.id.contentView);
         contentView.setContent(getResources().getString(R.string.lyrics_sretan_rodendan), getResources().getInteger(R.integer.lyrics_sretan_rodendan_takt), MainConfiguration.getDefaultSoundConfiguration(true));
+        final int bpm = getResources().getInteger(R.integer.lyrics_sretan_rodendan_bpm);
         playTask = new Task() {
             private long startMillis =0;
 
@@ -31,7 +32,12 @@ public class LyricsActivity extends Activity {
 
             @Override
             protected void process() {
-                scrollView.scrollTo((int) (getPercentFromCurrentTime() * contentView.getRight()), 0);
+                int pixelsPerBeat = contentView.getPixelsPerTakt();
+                long millisPlaying = System.currentTimeMillis() - startMillis;
+                float beatsPerMillisecond = bpm / 60f /  1000;
+
+                int pixels = (int) (millisPlaying * beatsPerMillisecond * pixelsPerBeat);
+                scrollView.scrollTo(pixels % contentView.getRight(), 0);
             }
         };
     }
