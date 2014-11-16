@@ -1,7 +1,9 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common.model;
 
 import android.content.Context;
 import android.media.SoundPool;
+
+import com.example.pducic.noisemaker.R;
 
 import java.io.Serializable;
 import java.util.Collection;

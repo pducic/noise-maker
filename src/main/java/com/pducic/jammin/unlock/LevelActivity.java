@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.unlock;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,6 +13,17 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.AbstractJamminActivity;
+import com.pducic.jammin.common.RecordingsListAdapter;
+import com.pducic.jammin.common.RecordingsListView;
+import com.pducic.jammin.common.Task;
+import com.pducic.jammin.common.config.IntentConstants;
+import com.pducic.jammin.common.config.MainConfiguration;
+import com.pducic.jammin.common.model.PlayingSound;
+import com.pducic.jammin.common.model.Recording;
+import com.pducic.jammin.common.model.Song;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,7 +51,7 @@ public class LevelActivity extends AbstractJamminActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        Level level = (Level) intent.getSerializableExtra(IntentConstants.LEVEL_CONFIGURATION);
+        LevelContent level = (LevelContent) intent.getSerializableExtra(IntentConstants.LEVEL_CONFIGURATION);
         soundPool = new SoundPool(MainConfiguration.MAX_STREAMS, AudioManager.STREAM_MUSIC, MainConfiguration.SRC_QUALITY);
         soundsConfiguration = level.getSoundsConfiguration();
         soundsConfiguration.init(this, soundPool);
@@ -178,7 +189,7 @@ public class LevelActivity extends AbstractJamminActivity {
         private boolean mute = false;
 
         @Override
-        void start() {
+        public void start() {
             super.start();
             int size = 0;
             songDuration = Math.max(song.getDuration(), songDuration);
@@ -212,7 +223,7 @@ public class LevelActivity extends AbstractJamminActivity {
         }
 
         @Override
-        void stop() {
+        public void stop() {
             super.stop();
             reset();
         }

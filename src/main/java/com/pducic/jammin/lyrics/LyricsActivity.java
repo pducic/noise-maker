@@ -1,20 +1,16 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.lyrics;
 
-import android.app.Activity;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.media.AudioManager;
-import android.media.SoundPool;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.AbstractJamminActivity;
+import com.pducic.jammin.common.Task;
+import com.pducic.jammin.common.config.IntentConstants;
+import com.pducic.jammin.common.model.PlayingSound;
 
 public class LyricsActivity extends AbstractJamminActivity {
 
@@ -23,6 +19,9 @@ public class LyricsActivity extends AbstractJamminActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        LyricsContent content = (LyricsContent) intent.getSerializableExtra(IntentConstants.LYRICS_CONFIGURATION);
+
         setContentView(R.layout.activity_lyrics);
 
         final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scrollView);
@@ -30,15 +29,15 @@ public class LyricsActivity extends AbstractJamminActivity {
         leftConfigButton = (Button) findViewById(R.id.leftConfigButton);
         rightConfigButton = (Button) findViewById(R.id.rightConfigButton);
 
-        SoundsConfiguration defaultSoundConfiguration = MainConfiguration.getDefaultSoundConfiguration(true);
-        defaultSoundConfiguration.init(this, soundPool);
-        contentView.setContent(getResources().getString(R.string.lyrics_sretan_rodendan), getResources().getInteger(R.integer.lyrics_sretan_rodendan_takt), defaultSoundConfiguration);
-        final int bpm = getResources().getInteger(R.integer.lyrics_sretan_rodendan_bpm);
+        soundsConfiguration = content.getSoundsConfiguration();
+        soundsConfiguration.init(this, soundPool);
+        contentView.setContent(getResources().getString(content.getLyricResourceId()), content.getTakt(), soundsConfiguration);
+        final int bpm = content.getBpm();
         playTask = new Task() {
             private long startMillis =0;
 
             @Override
-            void start() {
+            public void start() {
                 super.start();
                 startMillis = System.currentTimeMillis();
             }
@@ -57,25 +56,6 @@ public class LyricsActivity extends AbstractJamminActivity {
 
     @Override
     protected void onPlayingSound(PlayingSound playingSound) {
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.lyrics, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public void onStart(View view) {

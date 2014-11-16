@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common.model;
 
 /**
  * Created by pducic on 21.09.14..

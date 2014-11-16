@@ -1,14 +1,16 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.unlock;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.config.IntentConstants;
+import com.pducic.jammin.common.config.MainConfiguration;
 
 import java.util.List;
 
@@ -20,8 +22,8 @@ public class LevelsConfigurationActivity extends Activity {
         setContentView(R.layout.activity_levels_configuration);
 
         ListView levelsListView = (ListView) findViewById(R.id.levelsListView);
-        final List<Level> levels = MainConfiguration.getLevels();
-        ArrayAdapter<Level> adapter = new ArrayAdapter<Level>(this, R.layout.list_view_level_item, R.id.textViewLevelItem, levels);
+        final List<LevelContent> levels = MainConfiguration.getLevels();
+        ArrayAdapter<LevelContent> adapter = new ArrayAdapter<LevelContent>(this, R.layout.list_view_level_item, R.id.textViewLevelItem, levels);
         levelsListView.setAdapter(adapter);
 
         levelsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

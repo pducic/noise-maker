@@ -1,10 +1,8 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -12,6 +10,11 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.model.PlayingSound;
+import com.pducic.jammin.common.model.SoundPreview;
+import com.pducic.jammin.common.model.SoundsConfiguration;
 
 import java.util.LinkedList;
 import java.util.List;

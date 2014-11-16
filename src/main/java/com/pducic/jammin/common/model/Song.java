@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

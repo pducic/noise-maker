@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common;
 
 import android.content.Context;
 import android.util.AttributeSet;

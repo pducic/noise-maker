@@ -20,7 +20,7 @@
     <string name="title_activity_levels">LevelsActivity</string>
     <string name="title_activity_level">LevelActivity</string>
     <string name="unlock_mode">Unlock Mode</string>
-    <string name="jammin_mode">Jammin Mode</string>
+    <string name="jammin_mode">Jam Session Mode</string>
     <string name="goal">Goal</string>
     <string name="recording_result">Result</string>
     <string name="title_activity_lyrics">LyricsActivity</string>

@@ -85,7 +85,7 @@
         android:layout_alignLeft="@+id/playTempoButton"
         android:layout_alignStart="@+id/playTempoButton" />
 
-    <com.example.pducic.noisemaker.RecordingsListView
+    <com.pducic.jammin.common.RecordingsListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/recordingsList"

@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common;
 
 import android.os.Process;
 import android.util.Log;
@@ -6,7 +6,7 @@ import android.util.Log;
 /**
  * Created by pducic on 24.09.14.
  */
-//TODO use android intent service
+//TODO use android service
 public abstract class Task implements Runnable {
 
     private boolean running = false;
@@ -14,7 +14,7 @@ public abstract class Task implements Runnable {
 
     protected abstract void process();
 
-    void start(){
+    public void start(){
         synchronized (this) {
             if (running)
                 return;
@@ -27,11 +27,11 @@ public abstract class Task implements Runnable {
         }
     }
 
-    void stop() {
+    public void stop() {
         thread = null;
     }
 
-    boolean isRunning() {
+    public boolean isRunning() {
         return thread != null;
     }
 

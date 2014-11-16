@@ -1,4 +1,7 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.unlock;
+
+import com.pducic.jammin.common.model.Song;
+import com.pducic.jammin.common.model.SoundsConfiguration;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -6,7 +9,7 @@ import java.util.Collection;
 /**
  * Created by pducic on 26.10.14.
  */
-public class Level implements Serializable{
+public class LevelContent implements Serializable{
 
     private static final long serialVersionUID = 1004264492292352655L;
 
@@ -16,7 +19,7 @@ public class Level implements Serializable{
     private int mistakeMillis;
     private Collection<String> rewardSounds;
 
-    public Level(String name, Song goal, SoundsConfiguration soundsConfiguration, int mistakeMillis, Collection<String> rewardSounds) {
+    public LevelContent(String name, Song goal, SoundsConfiguration soundsConfiguration, int mistakeMillis, Collection<String> rewardSounds) {
         this.name = name;
         this.goal = goal;
         this.soundsConfiguration = soundsConfiguration;

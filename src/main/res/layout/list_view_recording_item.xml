@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:textSize="8dp" />
 
-    <com.example.pducic.noisemaker.RecordingView
+    <com.pducic.jammin.common.RecordingView
         android:id="@+id/recordingViewItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

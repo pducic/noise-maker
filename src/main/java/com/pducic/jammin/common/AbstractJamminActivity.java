@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common;
 
 import android.app.Activity;
 import android.hardware.Sensor;
@@ -11,6 +11,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
+
+import com.pducic.jammin.common.config.MainConfiguration;
+import com.pducic.jammin.common.model.Direction;
+import com.pducic.jammin.common.model.PlayingSound;
+import com.pducic.jammin.common.model.SoundGesture;
+import com.pducic.jammin.common.model.SoundsConfiguration;
 
 /**
  * Created by pducic on 02.11.14.

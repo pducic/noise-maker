@@ -1,9 +1,14 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.jamsession.JamminActivity;
+import com.pducic.jammin.lyrics.LyricsConfigurationActivity;
+import com.pducic.jammin.unlock.LevelsConfigurationActivity;
 
 public class MainMenuActivity extends Activity {
 
@@ -24,7 +29,7 @@ public class MainMenuActivity extends Activity {
     }
 
     public void startLyricsMode(View view){
-        Intent intent = new Intent(this, LyricsActivity.class);
+        Intent intent = new Intent(this, LyricsConfigurationActivity.class);
         startActivity(intent);
     }
 }

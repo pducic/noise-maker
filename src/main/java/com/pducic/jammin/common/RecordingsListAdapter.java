@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,6 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.model.PlayingSound;
+import com.pducic.jammin.common.model.Recording;
+import com.pducic.jammin.common.model.Song;
+import com.pducic.jammin.common.model.SoundsConfiguration;
 
 import java.util.HashSet;
 import java.util.Set;

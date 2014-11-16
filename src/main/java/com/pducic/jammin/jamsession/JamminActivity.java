@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.jamsession;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,6 +12,16 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.AbstractJamminActivity;
+import com.pducic.jammin.common.RecordingsListAdapter;
+import com.pducic.jammin.common.RecordingsListView;
+import com.pducic.jammin.common.Task;
+import com.pducic.jammin.common.config.MainConfiguration;
+import com.pducic.jammin.common.model.PlayingSound;
+import com.pducic.jammin.common.model.Recording;
+import com.pducic.jammin.common.model.Song;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -19,7 +29,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 
-public class JamminActivity extends AbstractJamminActivity{
+public class JamminActivity extends AbstractJamminActivity {
 
     private MediaPlayer tempoSound;
     private TempoTask tempoTask;
@@ -289,7 +299,7 @@ public class JamminActivity extends AbstractJamminActivity{
         private boolean mute = false;
 
         @Override
-        void start() {
+        public void start() {
             super.start();
             int size = 0;
             songDuration = Math.max(song.getDuration(), songDuration);
@@ -323,7 +333,7 @@ public class JamminActivity extends AbstractJamminActivity{
         }
 
         @Override
-        void stop() {
+        public void stop() {
             super.stop();
             reset();
         }

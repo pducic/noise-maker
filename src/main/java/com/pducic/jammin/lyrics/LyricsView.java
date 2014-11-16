@@ -1,4 +1,4 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.lyrics;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,6 +16,10 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.model.SoundPreview;
+import com.pducic.jammin.common.model.SoundsConfiguration;
 
 import java.util.LinkedList;
 import java.util.regex.Matcher;

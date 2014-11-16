@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainMenuActivity"
+            android:name="com.pducic.jammin.MainMenuActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,22 +17,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".JamminActivity"
+            android:name="com.pducic.jammin.jamsession.JamminActivity"
             android:label="@string/app_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.pducic.noisemaker.MainMenuActivity" />
         </activity>
         <activity
-            android:name=".LevelsConfigurationActivity"
+            android:name="com.pducic.jammin.unlock.LevelsConfigurationActivity"
             android:label="@string/title_activity_levels"
-            android:parentActivityName=".MainMenuActivity" >
+            android:parentActivityName="com.pducic.jammin.MainMenuActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.pducic.noisemaker.MainMenuActivity" />
         </activity>
         <activity
-            android:name=".LevelActivity"
+            android:name="com.pducic.jammin.unlock.LevelActivity"
             android:label="@string/title_activity_level"
             android:screenOrientation="portrait" >
             <meta-data
@@ -40,12 +40,20 @@
                 android:value="com.example.pducic.noisemaker.LevelsConfigurationActivity" />
         </activity>
         <activity
-            android:name=".LyricsActivity"
-            android:label="@string/title_activity_lyrics"
-            android:parentActivityName=".MainMenuActivity" >
+            android:name="com.pducic.jammin.lyrics.LyricsConfigurationActivity"
+            android:label="@string/title_activity_levels"
+            android:parentActivityName="com.pducic.jammin.MainMenuActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.pducic.noisemaker.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name="com.pducic.jammin.lyrics.LyricsActivity"
+            android:label="@string/title_activity_lyrics"
+            android:parentActivityName="com.pducic.jammin.MainMenuActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pducic.noisemaker.lyrics.LyricsConfigurationActivity" />
         </activity>
     </application>
 

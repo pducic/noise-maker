@@ -1,4 +1,16 @@
-package com.example.pducic.noisemaker;
+package com.pducic.jammin.common.config;
+
+import com.example.pducic.noisemaker.R;
+import com.pducic.jammin.common.model.Direction;
+import com.pducic.jammin.common.model.PlayingSound;
+import com.pducic.jammin.common.model.Recording;
+import com.pducic.jammin.common.model.Song;
+import com.pducic.jammin.common.model.Sound;
+import com.pducic.jammin.common.model.SoundGesture;
+import com.pducic.jammin.common.model.SoundPreview;
+import com.pducic.jammin.common.model.SoundsConfiguration;
+import com.pducic.jammin.lyrics.LyricsContent;
+import com.pducic.jammin.unlock.LevelContent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,14 +49,23 @@ public class MainConfiguration {
         sounds.add(new Sound("drum_hat_open", "drum hat", R.raw.drum_hat_open, new SoundPreview(android.R.color.holo_orange_dark), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.RIGHT)));
         sounds.add(new Sound("drum_prac_kick", "drum kick", R.raw.drum_prac_kick, new SoundPreview(android.R.color.holo_purple), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.RIGHT)));
         sounds.add(new Sound("drum_prac_snare", "drum snare", R.raw.drum_prac_snare, new SoundPreview(android.R.color.darker_gray), new SoundGesture(Direction.DOWN, SoundGesture.ConfigurationButtonId.RIGHT)));
-        sounds.add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.UP, SoundGesture.ConfigurationButtonId.RIGHT)));
+        sounds.add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.DOWN, SoundGesture.ConfigurationButtonId.RIGHT)));
 
         return new SoundsConfiguration(sounds, showDirections);
     }
 
-    public static List<Level> getLevels() {
-        return new ArrayList<Level>() {{
-            add(new Level("Level 1", new Song(Arrays.asList(new Recording("Level 1", new ArrayList<PlayingSound>() {{
+    public static List<LyricsContent> getLyrics(){
+        return new ArrayList<LyricsContent>() {
+            {
+                add(new LyricsContent("Sretan Rodendan", getDefaultSoundConfiguration(), R.string.lyrics_sretan_rodendan, 2, 27));
+                add(new LyricsContent("Stand By Me", getDefaultSoundConfiguration(), R.string.lyrics_stand_by_me, 2, 27));
+            }
+        };
+    }
+
+    public static List<LevelContent> getLevels() {
+        return new ArrayList<LevelContent>() {{
+            add(new LevelContent("Level 1", new Song(Arrays.asList(new Recording("Level 1", new ArrayList<PlayingSound>() {{
                 add(new PlayingSound("drum_prac_snare_rim", 0f, 2000));
                 add(new PlayingSound("drum_prac_kick", 0f, 3000));
             }}))), new SoundsConfiguration(new ArrayList<Sound>() {{
@@ -54,7 +75,7 @@ public class MainConfiguration {
                 add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.RIGHT, SoundGesture.ConfigurationButtonId.RIGHT)));
             }}, true), 150, Collections.<String>emptyList()));
 
-            add(new Level("Level 2", new Song(Arrays.asList(new Recording("Level 2", new ArrayList<PlayingSound>() {{
+            add(new LevelContent("Level 2", new Song(Arrays.asList(new Recording("Level 2", new ArrayList<PlayingSound>() {{
                 add(new PlayingSound("drum_prac_kick", 0f, 1000));
                 add(new PlayingSound("drum_prac_snare_rim", 0f, 2000));
                 add(new PlayingSound("drum_prac_snare_rim", 0f, 1500));
@@ -67,7 +88,7 @@ public class MainConfiguration {
                 add(new Sound("drum_prac_snare_rim", "drum snare rim", R.raw.drum_prac_snare_rim, new SoundPreview(android.R.color.holo_blue_bright), new SoundGesture(Direction.RIGHT, SoundGesture.ConfigurationButtonId.LEFT)));
             }}, true), 150, Collections.<String>emptyList()));
 
-            add(new Level("A major", new Song(Arrays.asList(new Recording("A major", new ArrayList<PlayingSound>() {{
+            add(new LevelContent("A major", new Song(Arrays.asList(new Recording("A major", new ArrayList<PlayingSound>() {{
                 add(new PlayingSound("a_major", 0f, 500));
                 add(new PlayingSound("a_majorL", 0f, 1150));
                 add(new PlayingSound("a_major", 0f, 1350));
@@ -79,7 +100,7 @@ public class MainConfiguration {
                 add(new Sound("a_majorL", "a_major", R.raw.a_major, new SoundPreview(android.R.color.holo_orange_dark), new SoundGesture(Direction.LEFT, SoundGesture.ConfigurationButtonId.RIGHT)));
             }}, true), 150, Collections.<String>emptyList()));
 
-            add(new Level("Sretan Rodendan", new Song(new ArrayList<Recording>() {{
+            add(new LevelContent("Sretan Rodendan", new Song(new ArrayList<Recording>() {{
                 add(new Recording("Whistle", new ArrayList<PlayingSound>() {{
                     add(new PlayingSound("sr_1", 0f, 700));
                     add(new PlayingSound("sr_1", 0f, 5000));
